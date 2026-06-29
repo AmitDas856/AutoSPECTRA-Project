@@ -7,7 +7,7 @@ env/
 # data + models (keep the repo light — document sources instead)
 *.zim
 *.gguf
-data/
+/data/
 chroma_db/
 *.sqlite3
 # notebooks / os
