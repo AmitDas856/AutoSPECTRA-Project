@@ -6,73 +6,82 @@ Why time-ordered (read this, it's a viva question):
 A random shuffle leaks "future" frames into training and fakes a ~99% score.
 We train on the EARLIEST traffic and test on the LATEST, so the test set is
 genuinely unseen. The assert at the bottom proves we did it.
+
+Why per-file split (second key decision):
+Each HCRL attack CSV is a separate capture session with its own time range.
+A global merge-then-split concentrates all early attacks in train and leaves
+some classes completely absent from the test set. Per-file split preserves the
+no-leakage property within each session while ensuring all 5 classes appear
+in both train and test.
 """
 
 from pathlib import Path
 import pandas as pd
 
-# Class labels we predict. 0 = normal, 1..4 = the four attack types.
 CLASSES = {"Normal": 0, "DoS": 1, "Fuzzy": 2, "Gear": 3, "RPM": 4}
 
+ATTACK_FILES = [
+    ("DoS_dataset.csv",   "DoS"),
+    ("Fuzzy_dataset.csv", "Fuzzy"),
+    ("gear_dataset.csv",  "Gear"),
+    ("RPM_dataset.csv",   "RPM"),
+]
 
-def load_attack_file(path: Path, attack_name: str) -> pd.DataFrame:
-    """Parse one HCRL attack CSV. Rows flagged 'T' are this attack; 'R' rows are Normal.
-    We parse line-by-line because rows have variable length (DLC differs)."""
+
+def _parse_file(path: Path, attack_name: str) -> pd.DataFrame:
+    """Parse one HCRL attack CSV line-by-line (DLC varies so row lengths differ)."""
     rows = []
     with open(path) as f:
         for line in f:
             parts = [p.strip() for p in line.strip().split(",")]
             if len(parts) < 4:
-                continue                       # skip blank/broken lines
-            ts = float(parts[0])               # timestamp
-            can_id = int(parts[1], 16)         # hex id -> integer
-            dlc = int(parts[2])                # how many data bytes
-            flag = parts[-1]                   # last field is R or T
-            data_hex = parts[3:3 + dlc]        # the data bytes
-            data = [int(b, 16) for b in data_hex]      # hex -> int
-            data = (data + [0] * 8)[:8]        # pad/trim to exactly 8
-            label = CLASSES[attack_name] if flag == "T" else CLASSES["Normal"]
-            rows.append([ts, can_id, dlc] + data + [label])
+                continue
+            try:
+                ts     = float(parts[0])
+                can_id = int(parts[1], 16)
+                dlc    = int(parts[2])
+                flag   = parts[-1]
+                data   = [int(b, 16) for b in parts[3:3 + dlc]]
+                data   = (data + [0] * 8)[:8]          # pad/trim to exactly 8
+                label  = CLASSES[attack_name] if flag == "T" else CLASSES["Normal"]
+                rows.append([ts, can_id, dlc] + data + [label])
+            except (ValueError, IndexError):
+                continue                                # skip malformed lines
     cols = ["timestamp", "can_id", "dlc"] + [f"d{i}" for i in range(8)] + ["label"]
     return pd.DataFrame(rows, columns=cols)
 
 
-def load_normal_file(path: Path) -> pd.DataFrame:
-    """The normal-run file is all Normal traffic (often no Flag column).
-    Not used right now — Normal rows come from flag='R' in the attack files."""
-    raise NotImplementedError("load_normal_file not needed; Normal comes from R-flagged rows.")
+def load_and_split(data_dir: str, train_frac: float = 0.70):
+    """Per-file time-ordered split — ensures all 5 attack classes in both sets.
 
-
-def load_all(data_dir: str) -> pd.DataFrame:
-    """Combine every attack file into one DataFrame, sorted by timestamp."""
+    For each file: sort by timestamp, take first train_frac as train, rest as test.
+    Then concatenate across files. The leakage assert is checked within each file.
+    """
     data_dir = Path(data_dir)
-    frames = [
-        load_attack_file(data_dir / "DoS_dataset.csv",   "DoS"),
-        load_attack_file(data_dir / "Fuzzy_dataset.csv", "Fuzzy"),
-        load_attack_file(data_dir / "gear_dataset.csv",  "Gear"),
-        load_attack_file(data_dir / "RPM_dataset.csv",   "RPM"),
-        # load_normal_file(data_dir / "normal_run_data.csv"),  # add if needed
-    ]
-    df = pd.concat(frames, ignore_index=True)
-    df = df.sort_values("timestamp").reset_index(drop=True)
-    return df
+    train_parts, test_parts = [], []
 
+    for fname, attack in ATTACK_FILES:
+        df = _parse_file(data_dir / fname, attack)
+        df = df.sort_values("timestamp").reset_index(drop=True)
+        cut = int(len(df) * train_frac)
+        tr, te = df.iloc[:cut].copy(), df.iloc[cut:].copy()
 
-def time_ordered_split(df: pd.DataFrame, train_frac: float = 0.70):
-    """Earliest train_frac by time -> train; the rest -> test. NO shuffling."""
-    df = df.sort_values("timestamp").reset_index(drop=True)
-    cut = int(len(df) * train_frac)
-    train, test = df.iloc[:cut], df.iloc[cut:]
+        # Per-file leakage check — do NOT remove this
+        assert tr["timestamp"].max() <= te["timestamp"].min(), \
+            f"LEAKAGE in {fname}: train contains frames later than test start."
 
-    # Safety net — do NOT delete this assert to make it pass.
-    assert train["timestamp"].max() <= test["timestamp"].min(), \
-        "LEAKAGE: train contains frames later than the start of test."
+        train_parts.append(tr)
+        test_parts.append(te)
+        print(f"  {attack}: {len(tr):,} train | {len(te):,} test")
+
+    train = pd.concat(train_parts, ignore_index=True)
+    test  = pd.concat(test_parts,  ignore_index=True)
     return train, test
 
 
 if __name__ == "__main__":
-    df = load_all("data/")
-    train, test = time_ordered_split(df)
-    print(f"Total {len(df):,} frames  |  train {len(train):,}  test {len(test):,}")
+    print("Loading and splitting HCRL data (per-file time-ordered split)...")
+    train, test = load_and_split("data/")
+    print(f"\nTotal  train {len(train):,}  |  test {len(test):,}")
     print("Train class counts:\n", train["label"].value_counts().sort_index())
-    print("Test class counts:\n", test["label"].value_counts().sort_index())
+    print("Test class counts:\n",  test["label"].value_counts().sort_index())
