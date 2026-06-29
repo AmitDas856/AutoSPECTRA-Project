@@ -4,6 +4,6 @@ scikit-learn>=1.3      # baseline classifier (RandomForest) + metrics
 pandas>=2.0            # parse the HCRL Car-Hacking CSV files
 matplotlib>=3.8        # ROC curves / confusion-matrix plots for the report
 # Deep models (the headline CNN on CAN-images + LSTM - add when you move past the baseline):
-# torch>=2.2
+torch>=2.2
 # Live demo dashboard for the pitch:
 # streamlit>=1.30
