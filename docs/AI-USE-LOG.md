@@ -8,4 +8,6 @@
 | 2026-06-18 | Claude (Cowork) | Add technical-review citations, evaluation plan, ethics analysis, pitch outline; upgrade prototype to ingest real documents + add eval harness | Shared scaffolding and sourced facts; each member writes their own report prose and verifies citations in Zotero |
 | 2026-06-18 | Claude (Cowork) | Re-focus project onto CAN-bus intrusion detection (AutoSPECTRA); brief-coverage map, reframed proposal, runnable CAN-IDS prototype + literature | Shared project scaffolding; team writes report prose, trains the real models, and verifies citations |
 
+| 2026-06-29 | Claude (Sonnet) | Set up GitHub repo, create issues/board, fix deadline dates, complete frames_to_image encoder TODO | Repo setup and issue creation; I wrote the encoder, understand the normalisation and channel reshape for the viva |
+
 <!-- Add rows as you use Gemini/Antigravity/Copilot for lit review, code help, or drafting. -->
