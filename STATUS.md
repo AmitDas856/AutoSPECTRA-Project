@@ -1,40 +1,44 @@
 # STATUS — Amit (Data + Eval)
 
-**Last updated:** 2026-06-29
+**Last updated:** 2026-06-30
 
-## Done this session
-- `src/data/load_split.py` written and runs on real HCRL data
-- `data/` folder wired to the four CSVs (Windows junction — no copy needed, git-ignored)
-- Time-ordered split runs; **leakage assert passes** (`train.max_ts <= test.min_ts`) ✓
+## Done (Week 5-6)
+- `src/data/load_split.py`: per-file time-ordered 70/30 split, leakage assert ✓
+- `data/` wired to four CSVs (Windows junction, git-ignored)
+- `eval/run_eval.py`: harness — per-class precision/recall/F1, FPR, ROC-AUC, confusion matrix
+- `eval/baseline_rf.py`: Decision Tree baseline, runs on real data
+- `eval/results_week6.md`: **first real metrics committed to GitHub** ✓
+- `eval/confusion_matrix.png`: confusion matrix on 4.97M test frames ✓
 
-## Real dataset numbers (first run — commit these)
-| | Frames |
-|---|---|
-| Total | 16,569,475 |
-| Train (70%) | 11,598,632 |
-| Test (30%) | 4,970,843 |
+## First real results (Decision Tree, per-file split, 2026-06-30)
+| Class | Precision | Recall | F1 |
+|---|---|---|---|
+| Normal | 1.0000 | 1.0000 | 1.0000 |
+| DoS | 1.0000 | 1.0000 | 1.0000 |
+| Fuzzy | 0.9999 | 0.9994 | 0.9996 |
+| Gear | 1.0000 | 1.0000 | 1.0000 |
+| RPM | 1.0000 | 1.0000 | 1.0000 |
 
-**Train class counts:**
-- 0 Normal: 9,562,234
-- 1 DoS: 292,402
-- 2 Fuzzy: 491,847
-- 3 Gear: 597,252
-- 4 RPM: 654,897
+Macro ROC-AUC: 0.9999 | FPR all classes < 0.0001
 
-**Test class counts:**
-- 0 Normal: 4,675,724
-- 1 DoS: 295,119
-- ⚠️ Fuzzy, Gear, RPM = 0 in test (see Known Issues below)
+**NOTE:** Near-perfect scores are expected and suspicious — discuss in Part D.
 
-## Known issues / next
-- **[CRITICAL — discuss in Part D]** Only 2 classes appear in test (Normal + DoS). Fuzzy/Gear/RPM attack frames all fall in the earliest 70% of the merged timeline. Root cause: each HCRL attack file is a separate capture session with its own time range; merging and splitting globally concentrates early attacks in train. Fix: **per-file time-ordered split** (split each CSV at 70/30 independently, then concatenate train splits and test splits). This is a Week 6 task.
-- `load_normal_file` unused (Normal rows come from `flag='R'` in attack files — fine for now)
-- Detection latency metric: Week 8 (needs model outputs + timestamps)
+## Split (per-file time-ordered)
+| | Train | Test |
+|---|---|---|
+| Normal | 9,483,390 | 4,754,568 |
+| DoS | 566,357 | 21,164 |
+| Fuzzy | 448,424 | 43,423 |
+| Gear | 528,215 | 69,037 |
+| RPM | 572,245 | 82,652 |
+
+All 5 classes in train AND test. Leakage assert passes per-file ✓
 
 ## Next session priorities
-1. Fix the split: per-file 70/30 so all 5 classes appear in test
-2. Wire the RandomForest baseline from `src/can_ids.py` to the eval harness in `eval/run_eval.py`
-3. Commit first real metric numbers (Week 6 gate)
+1. Upgrade Decision Tree to RandomForest (when memory allows)
+2. Wire Ad's CNN output through `eval/run_eval.py` — same harness, same split
+3. Add detection latency metric (Week 8)
+4. Write Part D draft: explain why ~1.0 scores are expected, not impressive
 
 ---
 
