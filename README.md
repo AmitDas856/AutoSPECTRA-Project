@@ -37,7 +37,7 @@ CAN log → parse → ┬─ (CV)  frames → recurrence-plot / grid IMAGE → C
                   ├─ (seq) ID + payload sequence → LSTM / autoencoder
                   └─ fuse → attack? which class? → (NLP) auto incident report
 ```
-Primary dataset: **HCRL Car-Hacking** (1.3M messages, real 2010 Hyundai, 5 attack classes). Prototype ships with a synthetic CAN generator so it runs before any download.
+Primary dataset: **HCRL Car-Hacking** (~16.6M CAN frames across the four attack captures, logged from a real Hyundai YF Sonata via OBD-II, 5 classes). Prototype ships with a synthetic CAN generator so it runs before any download.
 
 ## Team (assign by layer — gives the SPECTRA proposer the CNN role)
 | Member | Suggested role | GitHub |
@@ -50,7 +50,18 @@ Primary dataset: **HCRL Car-Hacking** (1.3M messages, real 2010 Hyundai, 5 attac
 ```bash
 pip install -r requirements.txt
 python src/can_ids.py --demo          # generate CAN traffic + attacks, train, evaluate
+python src/cv_model.py                # 10-second CNN smoke test, no data needed
 ```
+
+## Get the data (HCRL Car-Hacking)
+The real experiments need the dataset. It is free but not committed to this repo.
+
+1. Download from the HCRL page: https://ocslab.hksecurity.net/Datasets/car-hacking-dataset
+2. The four files the loader uses are `DoS_dataset.csv`, `Fuzzy_dataset.csv`, `gear_dataset.csv` and `RPM_dataset.csv`. The normal-run file is not used yet — Normal frames come from the R-flagged rows inside the attack captures.
+3. Place the CSVs in a `data/` folder at the repo root. The `data/` folder is git-ignored, so the CSVs are never committed. A Windows junction to wherever the download lives also works:
+   `New-Item -ItemType Junction -Path data -Target "<your dataset folder>"` (PowerShell)
+4. Check the data loads: `python src/data/load_split.py` should print the per-file split and the class counts (about 16.57M frames in total, all 5 classes present in train and test).
+5. Then the real runs work: `python src/train_cnn.py` (CNN) and `python eval/baseline_rf.py` (baselines).
 
 ## Assessment mapping
 Report **A** problem → `docs/PROPOSAL` · **B** technical review → `docs/LITERATURE` · **C** design/impl → `src/` · **D** evaluation → `docs/EVALUATION` + `docs/ETHICS` · **E** project mgmt → `PROJECT_BOARD` + commit history · **F** conclusion → report. Full LO/block map: `docs/PROJECT-PLAN.md`.
