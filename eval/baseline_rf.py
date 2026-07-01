@@ -1,142 +1,144 @@
-"""
-AutoSPECTRA — Decision Tree baseline on real HCRL data.
-Owner: Amit (Data + Eval).
+"""Tabular baselines on the real HCRL data: Decision Tree and RandomForest.
+Amit (Data + Eval)."""
 
-Uses Decision Tree as the initial fast baseline. All results written to
-eval/results_week6.md so they survive regardless of terminal capture issues.
-RandomForest upgrade is a TODO once we confirm this pipeline works end-to-end.
-"""
+# Both models are trained on the same 20% stratified sample of the train split
+# and tested on the FULL held-out test split, so the comparison is fair.
+# Everything is written to eval/results_week6.md so the evidence is on GitHub.
 
-import sys, os
+import sys
+import os
 sys.path.append("src")
+sys.path.append("eval")
 
-from pathlib import Path
-import numpy as np
+import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import (classification_report, confusion_matrix,
-                             roc_auc_score)
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, f1_score, roc_auc_score
 
 from data.load_split import load_and_split
+from run_eval import (CLASS_NAMES, false_positive_rate, plot_confusion,
+                      detection_latency)
 
-CLASS_NAMES = ["Normal", "DoS", "Fuzzy", "Gear", "RPM"]
-FEATURES    = ["can_id", "dlc"] + [f"d{i}" for i in range(8)]
+FEATURES = ["can_id", "dlc"] + [f"d{i}" for i in range(8)]
 
 
-def run():
-    print("Loading + splitting HCRL data (per-file time-ordered split)...")
-    train, test = load_and_split("data/")
+def sample_train(train, frac=0.20):
+    # Take the same fraction from every class so the sample keeps the class
+    # balance of the full training set (stratified sample).
+    sample_parts = []
+    for cls in sorted(train["label"].unique()):
+        part = train[train["label"] == cls]
+        sample_parts.append(part.sample(frac=frac, random_state=0))
+    return pd.concat(sample_parts)
 
-    print(f"\nTrain: {len(train):,} frames")
-    print(f"Test:  {len(test):,} frames")
-    print("Train classes:", dict(train["label"].value_counts().sort_index()))
-    print("Test classes: ", dict(test["label"].value_counts().sort_index()))
 
-    # Use a 20% stratified sample of train to keep memory and time manageable
-    train_sample = train.groupby("label", group_keys=False).apply(
-        lambda x: x.sample(frac=0.20, random_state=0)
-    )
-    print(f"\nTraining on 20% sample: {len(train_sample):,} frames")
-
-    X_train = train_sample[FEATURES].values
-    y_train = train_sample["label"].values
-    X_test  = test[FEATURES].values
-    y_test  = test["label"].values
-
-    print("Training Decision Tree baseline...")
-    clf = DecisionTreeClassifier(max_depth=20, random_state=0)
+def run_model(name, clf, X_train, y_train, X_test, y_test, ts_test):
+    # Train one model and collect every metric the report needs.
+    print(f"\n--- {name} ---")
+    print("fitting...")
     clf.fit(X_train, y_train)
-
-    print("Predicting on full test set...")
-    pred  = clf.predict(X_test)
+    print("predicting on full test set...")
+    pred = clf.predict(X_test)
     proba = clf.predict_proba(X_test)
 
-    # --- Compute metrics ---
-    present_labels = sorted(set(y_test) | set(pred))
-    names = [CLASS_NAMES[i] for i in present_labels]
-
-    report = classification_report(y_test, pred, labels=present_labels,
+    present = sorted(set(y_test.tolist()) | set(pred.tolist()))
+    names = [CLASS_NAMES[i] for i in present]
+    report = classification_report(y_test, pred, labels=present,
                                    target_names=names, digits=4)
-
-    cm = confusion_matrix(y_test, pred, labels=present_labels)
-
-    fpr = {}
-    for i, label in enumerate(present_labels):
-        fp = cm[:, i].sum() - cm[i, i]
-        tn = cm.sum() - cm[i, :].sum() - cm[:, i].sum() + cm[i, i]
-        fpr[CLASS_NAMES[label]] = fp / (fp + tn) if (fp + tn) else 0.0
-
+    macro_f1 = f1_score(y_test, pred, average="macro")
+    fpr = false_positive_rate(y_test, pred)
     try:
-        # proba columns match clf.classes_
-        auc = roc_auc_score(y_test, proba, multi_class="ovr",
-                            labels=list(range(len(CLASS_NAMES))))
-        auc_str = f"{auc:.4f}"
+        auc = f"{roc_auc_score(y_test, proba, multi_class='ovr'):.4f}"
     except Exception as e:
-        auc_str = f"skipped ({e})"
+        auc = f"skipped ({e})"
+    latency = detection_latency(ts_test, y_test, pred)
+    plot_confusion(y_test, pred, out=f"eval/confusion_{name}.png")
 
-    # --- Print to terminal ---
-    print("\n" + "="*65)
-    print("DECISION TREE BASELINE — FIRST REAL RESULTS")
-    print("="*65)
     print(report)
-    print("False-positive rate per class:")
-    for k, v in fpr.items():
-        print(f"  {k:7s}: {v:.4f}")
-    print(f"\nMacro ROC-AUC (ovr): {auc_str}")
+    print("latency:", latency)
+    result = {
+        "report": report,
+        "macro_f1": macro_f1,
+        "fpr": fpr,
+        "auc": auc,
+        "latency": latency,
+    }
+    return result
 
-    # --- Save confusion matrix PNG ---
-    fig, ax = plt.subplots(figsize=(6, 5))
-    im = ax.imshow(cm, cmap="Blues")
-    ax.set_xticks(range(len(names))); ax.set_xticklabels(names, rotation=45, ha="right")
-    ax.set_yticks(range(len(names))); ax.set_yticklabels(names)
-    ax.set_xlabel("Predicted"); ax.set_ylabel("True")
-    for i in range(len(names)):
-        for j in range(len(names)):
-            ax.text(j, i, cm[i, j], ha="center", va="center", fontsize=7)
-    fig.colorbar(im); fig.tight_layout()
-    fig.savefig("eval/confusion_matrix.png", dpi=150)
-    print("Saved eval/confusion_matrix.png")
 
-    # --- Write results to markdown so they're captured on GitHub ---
+def main():
+    print("Loading + splitting HCRL data (per-file time-ordered split)...")
+    train, test = load_and_split("data/")
+    print(f"Train {len(train):,} | Test {len(test):,}")
+
+    train_sample = sample_train(train)
+    X_train = train_sample[FEATURES].values
+    y_train = train_sample["label"].values
+    X_test = test[FEATURES].values
+    y_test = test["label"].values
+    ts_test = test["timestamp"].values
+    print(f"Fitting on {len(train_sample):,} frames (20% stratified sample)")
+
+    results = {}
+    dt = DecisionTreeClassifier(max_depth=20, random_state=0)
+    results["DecisionTree"] = run_model("DecisionTree", dt, X_train, y_train,
+                                        X_test, y_test, ts_test)
+    rf = RandomForestClassifier(n_estimators=50, max_depth=20, n_jobs=4,
+                                random_state=0)
+    results["RandomForest"] = run_model("RandomForest", rf, X_train, y_train,
+                                        X_test, y_test, ts_test)
+
+    # Write the results file. This is the evidence for Report Part D.
+    # encoding="utf-8" matters on Windows: the default is cp1252 and the
+    # script crashes on characters like the arrow in the latency line.
     os.makedirs("eval", exist_ok=True)
-    with open("eval/results_week6.md", "w") as f:
-        f.write("# Baseline Results — Week 6\n\n")
-        f.write("**Model:** Decision Tree (max_depth=20, trained on 20% sample of train set)\n")
-        f.write("**Split:** Per-file time-ordered 70/30 — no leakage\n\n")
-        f.write(f"- Train frames: {len(train):,} (used {len(train_sample):,} = 20%)\n")
-        f.write(f"- Test frames:  {len(test):,}\n\n")
+    with open("eval/results_week6.md", "w", encoding="utf-8") as f:
+        f.write("# Baseline Results — Week 6 (tabular models)\n\n")
+        f.write("**Split:** per-file time-ordered 70/30, leakage assert passes per file.\n")
+        f.write(f"**Train:** {len(train):,} frames (models fit on 20% stratified "
+                f"sample = {len(train_sample):,}). **Test:** {len(test):,} frames "
+                f"(full held-out tail, all 5 classes).\n\n")
 
-        f.write("## Per-class Precision / Recall / F1\n\n")
-        f.write("```\n" + report + "```\n\n")
+        f.write("## Model comparison (frame-level, full test set)\n\n")
+        f.write("| Model | Macro-F1 | ROC-AUC (ovr) | Worst-class FPR |\n|---|---|---|---|\n")
+        for name in results:
+            r = results[name]
+            worst_fpr = max(r["fpr"].values())
+            f.write(f"| {name} | {r['macro_f1']:.4f} | {r['auc']} | {worst_fpr:.5f} |\n")
 
-        f.write("## False-Positive Rate per class\n\n")
-        f.write("| Class | FPR |\n|---|---|\n")
-        for k, v in fpr.items():
-            f.write(f"| {k} | {v:.4f} |\n")
+        for name in results:
+            r = results[name]
+            f.write(f"\n## {name}\n\n```\n{r['report']}```\n\n")
+            fpr_parts = []
+            for k, v in r["fpr"].items():
+                fpr_parts.append(f"{k} {v:.5f}")
+            f.write("**False-positive rate per class:** ")
+            f.write(", ".join(fpr_parts) + "\n\n")
+            f.write("**Detection latency** (episode = burst of attack frames with "
+                    "<1s gaps; latency = attack onset → first correctly-flagged frame):\n\n")
+            f.write("| Class | Episodes | Detected | Median ms | Max ms | Median frames |\n")
+            f.write("|---|---|---|---|---|---|\n")
+            for cls, d in r["latency"].items():
+                f.write(f"| {cls} | {d['episodes']} | {d['detected']} | "
+                        f"{d['median_ms']:.2f} | {d['max_ms']:.2f} | {d['median_frames']} |\n")
+            f.write(f"\nConfusion matrix: `eval/confusion_{name}.png`\n")
 
-        f.write(f"\n## ROC-AUC\n\nMacro ROC-AUC (one-vs-rest): **{auc_str}**\n\n")
-
-        f.write("## Critical analysis (for Report Part D)\n\n")
         f.write(
-            "Scores are very high because:\n"
-            "1. The HCRL attacks are coarse injections on a *single* 2010 Hyundai Sonata.\n"
-            "   Injected frames differ obviously in payload patterns from normal traffic,\n"
-            "   making them easy for even a shallow tree to separate.\n"
-            "2. DoS floods at fixed IDs; Fuzzy randomises all bytes — both create strong\n"
-            "   statistical signatures a Decision Tree exploits trivially.\n"
-            "3. These scores do NOT mean the system would work on a different vehicle,\n"
-            "   a different CAN bus speed, or against a subtle stealthy attacker who\n"
-            "   mimics normal traffic patterns.\n\n"
-            "The *evaluation* contribution is: honest split + per-class FPR + latency,\n"
-            "not the headline number. A false alarm in a moving car is dangerous;\n"
-            "the FPR column is the number that matters for safety.\n"
-            "[VERIFY — write this in your own words for Part D]\n"
+            "\n## Critical analysis (notes for Report Part D — write in own words)\n\n"
+            "- Near-perfect scores are EXPECTED on this dataset, not impressive: the\n"
+            "  HCRL attacks are coarse injections on a single 2010 Hyundai Sonata.\n"
+            "  DoS floods a fixed CAN ID (0x000) and Fuzzy randomises whole payloads —\n"
+            "  both leave signatures a shallow tree separates trivially.\n"
+            "- The comparison DT vs RF therefore shows near-identical headline numbers;\n"
+            "  the informative columns are FPR (false alarms erode driver trust) and\n"
+            "  detection latency (an IDS that flags after the crash is useless).\n"
+            "- Latency here is measured per attack EPISODE, strict correct-class flag.\n"
+            "- These results say nothing about a different vehicle, bus load, or a\n"
+            "  stealthy attacker that mimics normal traffic. Single-vehicle bias is\n"
+            "  the headline limitation for Part D.\n"
         )
-
-    print("Saved eval/results_week6.md")
+    print("\nSaved eval/results_week6.md")
 
 
 if __name__ == "__main__":
-    run()
+    main()

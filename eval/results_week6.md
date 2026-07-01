@@ -1,12 +1,16 @@
-# Baseline Results — Week 6
+# Baseline Results â€” Week 6 (tabular models)
 
-**Model:** Decision Tree (max_depth=20, trained on 20% sample of train set)
-**Split:** Per-file time-ordered 70/30 — no leakage
+**Split:** per-file time-ordered 70/30, leakage assert passes per file.
+**Train:** 11,598,631 frames (models fit on 20% stratified sample = 2,319,726). **Test:** 4,970,844 frames (full held-out tail, all 5 classes).
 
-- Train frames: 11,598,631 (used 2,319,726 = 20%)
-- Test frames:  4,970,844
+## Model comparison (frame-level, full test set)
 
-## Per-class Precision / Recall / F1
+| Model | Macro-F1 | ROC-AUC (ovr) | Worst-class FPR |
+|---|---|---|---|
+| DecisionTree | 0.9999 | 0.9999 | 0.00012 |
+| RandomForest | 1.0000 | 1.0000 | 0.00000 |
+
+## DecisionTree
 
 ```
               precision    recall  f1-score   support
@@ -22,33 +26,58 @@
 weighted avg     1.0000    1.0000    1.0000   4970844
 ```
 
-## False-Positive Rate per class
+**False-positive rate per class:** Normal 0.00012, DoS 0.00000, Fuzzy 0.00000, Gear 0.00000, RPM 0.00000
 
-| Class | FPR |
-|---|---|
-| Normal | 0.0001 |
-| DoS | 0.0000 |
-| Fuzzy | 0.0000 |
-| Gear | 0.0000 |
-| RPM | 0.0000 |
+**Detection latency** (episode = burst of attack frames with <1s gaps; latency = attack onset â†’ first correctly-flagged frame):
 
-## ROC-AUC
+| Class | Episodes | Detected | Median ms | Max ms | Median frames |
+|---|---|---|---|---|---|
+| DoS | 14 | 14 | 0.00 | 0.00 | 0 |
+| Fuzzy | 25 | 25 | 0.00 | 0.00 | 0 |
+| Gear | 37 | 37 | 0.00 | 0.00 | 0 |
+| RPM | 40 | 40 | 0.00 | 0.00 | 0 |
 
-Macro ROC-AUC (one-vs-rest): **0.9999**
+Confusion matrix: `eval/confusion_DecisionTree.png`
 
-## Critical analysis (for Report Part D)
+## RandomForest
 
-Scores are very high because:
-1. The HCRL attacks are coarse injections on a *single* 2010 Hyundai Sonata.
-   Injected frames differ obviously in payload patterns from normal traffic,
-   making them easy for even a shallow tree to separate.
-2. DoS floods at fixed IDs; Fuzzy randomises all bytes — both create strong
-   statistical signatures a Decision Tree exploits trivially.
-3. These scores do NOT mean the system would work on a different vehicle,
-   a different CAN bus speed, or against a subtle stealthy attacker who
-   mimics normal traffic patterns.
+```
+              precision    recall  f1-score   support
 
-The *evaluation* contribution is: honest split + per-class FPR + latency,
-not the headline number. A false alarm in a moving car is dangerous;
-the FPR column is the number that matters for safety.
-[VERIFY — write this in your own words for Part D]
+      Normal     1.0000    1.0000    1.0000   4754568
+         DoS     1.0000    1.0000    1.0000     21164
+       Fuzzy     1.0000    1.0000    1.0000     43423
+        Gear     1.0000    1.0000    1.0000     69037
+         RPM     1.0000    1.0000    1.0000     82652
+
+    accuracy                         1.0000   4970844
+   macro avg     1.0000    1.0000    1.0000   4970844
+weighted avg     1.0000    1.0000    1.0000   4970844
+```
+
+**False-positive rate per class:** Normal 0.00000, DoS 0.00000, Fuzzy 0.00000, Gear 0.00000, RPM 0.00000
+
+**Detection latency** (episode = burst of attack frames with <1s gaps; latency = attack onset â†’ first correctly-flagged frame):
+
+| Class | Episodes | Detected | Median ms | Max ms | Median frames |
+|---|---|---|---|---|---|
+| DoS | 14 | 14 | 0.00 | 0.00 | 0 |
+| Fuzzy | 25 | 25 | 0.00 | 0.00 | 0 |
+| Gear | 37 | 37 | 0.00 | 0.00 | 0 |
+| RPM | 40 | 40 | 0.00 | 0.00 | 0 |
+
+Confusion matrix: `eval/confusion_RandomForest.png`
+
+## Critical analysis (notes for Report Part D â€” write in own words)
+
+- Near-perfect scores are EXPECTED on this dataset, not impressive: the
+  HCRL attacks are coarse injections on a single 2010 Hyundai Sonata.
+  DoS floods a fixed CAN ID (0x000) and Fuzzy randomises whole payloads â€”
+  both leave signatures a shallow tree separates trivially.
+- The comparison DT vs RF therefore shows near-identical headline numbers;
+  the informative columns are FPR (false alarms erode driver trust) and
+  detection latency (an IDS that flags after the crash is useless).
+- Latency here is measured per attack EPISODE, strict correct-class flag.
+- These results say nothing about a different vehicle, bus load, or a
+  stealthy attacker that mimics normal traffic. Single-vehicle bias is
+  the headline limitation for Part D.
