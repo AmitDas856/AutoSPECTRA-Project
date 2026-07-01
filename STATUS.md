@@ -48,7 +48,7 @@ All 5 classes in train AND test. Leakage assert passes per-file ✓
 # STATUS — CV + Lead
 
 **Owner:** Ad (Aahmad)
-**Last updated:** 2026-07-01
+**Last updated:** 2026-07-02
 
 ---
 
@@ -60,6 +60,9 @@ All 5 classes in train AND test. Leakage assert passes per-file ✓
 - **`src/train_cnn.py` — TinyCNN trained on the REAL per-file split.** Windows of 32 frames, window = attack if any injected frame inside. Trained on 36k capped windows, tested on ALL 155,337 test windows
 - **First real CNN numbers (window-level):** macro-F1 0.9857, macro ROC-AUC 0.9993. The interesting bit: **Fuzzy precision 0.9010** — the CNN mistakes some Normal windows for Fuzzy (randomised payloads look like normal traffic variety). Full table in `eval/results_cnn.md`
 - Latency: all 116 attack episodes detected, median 0 ms (first window), worst 88 ms (Fuzzy)
+- **Window-size ablation done (WINDOW = 16/32/64):** same net/recipe/split, full table + analysis in `eval/ABLATION.md`. Clean context-vs-latency trade-off (F1 0.9533→0.9956, worst latency 14→256 ms); Fuzzy precision is the sensitive number. `train_cnn.py` now takes the window on the CLI: `python src/train_cnn.py 16`
+- **Encoding ablation done (grid vs recurrence plot):** grid wins clearly (macro-F1 0.9857 vs 0.8452) — a genuine negative result; the naive recurrence map collapses the per-feature signal. Written up in `eval/ABLATION.md`. `python src/train_cnn.py 32 rec` runs the recurrence variant
+- **Fallback demo built (`src/demo.py`):** replays a real capture, flags attacks live in the terminal — the pitch insurance if Streamlit isn't ready. Verified on the Gear capture: 5 episodes flagged live, all attack frames caught, 0 false positives
 - Proposal approved by Royce (email 25 Jun); meeting offered after lecture Wed 1 Jul
 - GROUP-LOG.md started
 
@@ -68,9 +71,9 @@ All 5 classes in train AND test. Leakage assert passes per-file ✓
 - nothing technical blocked
 
 ## 3. Next step (the single next thing to do)
-- Meet Royce after Wed 1 Jul lecture to confirm pitch slot
-- Window-size ablation (16/64) + recurrence-plot encoding vs plain grid
-- Hand a sample detection to Nagireddy for the incident-report generator
+- Chase the 3 missing GitHub usernames; backup work for their slices is staged locally so we're not blocked
+- Feed a real detection from demo.py into the incident-report generator (one-line wire-in)
+- Consider a WINDOW=48 point if the report wants a smoother ablation curve
 
 ## 4. How to run what I have
 ```bash
