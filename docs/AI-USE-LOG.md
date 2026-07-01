@@ -9,5 +9,7 @@
 | 2026-06-18 | Claude (Cowork) | Re-focus project onto CAN-bus intrusion detection (AutoSPECTRA); brief-coverage map, reframed proposal, runnable CAN-IDS prototype + literature | Shared project scaffolding; team writes report prose, trains the real models, and verifies citations |
 
 | 2026-06-29 | Claude (Sonnet) | Set up GitHub repo, create issues/board, fix deadline dates, complete frames_to_image encoder TODO | Repo setup and issue creation; I wrote the encoder, understand the normalisation and channel reshape for the viva |
+| 2026-06-29/30 | Claude (Sonnet) | Scaffold HCRL loader + time-ordered split, evaluation harness, baseline runner; debug Windows/memory issues | Amit reviewed every function and re-ran everything; found + fixed the missing-test-classes problem with the per-file split (documented in results_week6.md) |
+| 2026-06-30 | Claude (Fable) | Add detection-latency metric + RandomForest comparison to the harness; wire TinyCNN to the real split with windowing (train_cnn.py); clean up stale scripts | Code reviewed line-by-line by Amit (eval) and Ad (CNN wiring); each explains their slice in the viva. All numbers are real runs on the HCRL test tail |
 
 <!-- Add rows as you use Gemini/Antigravity/Copilot for lit review, code help, or drafting. -->
