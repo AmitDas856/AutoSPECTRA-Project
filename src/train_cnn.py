@@ -23,8 +23,16 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from cv_model import TinyCNN, frames_to_image, WINDOW
+from cv_model import TinyCNN, frames_to_image, WINDOW as DEFAULT_WINDOW
 from data.load_split import load_and_split
+
+# window size can come from the cli for the ablation:
+#   python src/train_cnn.py 16      (no arg = the usual 32 from cv_model)
+# TinyCNN's adaptive pool copes with any height, so only the windowing
+# changes - same net, same training recipe, honest comparison.
+WINDOW = int(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_WINDOW
+# ablation runs get their own output files; the default keeps the week-6 names
+TAG = "" if WINDOW == DEFAULT_WINDOW else f"_w{WINDOW}"
 
 FEATURES   = ["can_id"] + [f"d{i}" for i in range(8)]   # 9 features -> image width 9
 CAP_ATTACK = 6000     # max train windows per attack class
@@ -139,7 +147,7 @@ def main():
     except Exception as e:
         auc = f"skipped ({e})"
     latency = detection_latency(te_t, te_y, pred)   # window-level: end-of-window ts
-    plot_confusion(te_y, pred, out="eval/confusion_TinyCNN.png")
+    plot_confusion(te_y, pred, out=f"eval/confusion_TinyCNN{TAG}.png")
 
     print(report)
     print("FPR:", {k: round(v, 5) for k, v in fpr.items()})
@@ -148,8 +156,8 @@ def main():
 
     # utf-8 explicitly - windows defaults to cp1252 and mangles the dashes
     os.makedirs("eval", exist_ok=True)
-    with open("eval/results_cnn.md", "w", encoding="utf-8") as f:
-        f.write("# TinyCNN Results — CAN windows -> image -> CNN (Week 6)\n\n")
+    with open(f"eval/results_cnn{TAG}.md", "w", encoding="utf-8") as f:
+        f.write(f"# TinyCNN Results — CAN windows -> image -> CNN (WINDOW={WINDOW})\n\n")
         f.write(f"**Unit:** windows of {WINDOW} frames (window = attack if any "
                 "injected frame inside). Frame-level baselines in "
                 "results_week6.md are NOT directly comparable 1:1 — say so in the report.\n\n")
@@ -170,14 +178,14 @@ def main():
         for cls, d in latency.items():
             f.write(f"| {cls} | {d['episodes']} | {d['detected']} | "
                     f"{d['median_ms']:.2f} | {d['max_ms']:.2f} |\n")
-        f.write("\nConfusion matrix: `eval/confusion_TinyCNN.png`\n\n")
+        f.write(f"\nConfusion matrix: `eval/confusion_TinyCNN{TAG}.png`\n\n")
         f.write("## Notes for the report\n\n"
                 "- Window labelling ('any injected frame') inflates attack support "
                 "relative to frame counts; state the labelling rule explicitly.\n"
                 "- Trained on a capped subsample for CPU time; test coverage is full.\n"
                 "- Next ablation: WINDOW = 16 / 64, and recurrence-plot encoding "
                 "vs the plain grid used here.\n")
-    print("Saved eval/results_cnn.md")
+    print(f"Saved eval/results_cnn{TAG}.md")
 
 
 if __name__ == "__main__":
