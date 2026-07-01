@@ -12,6 +12,28 @@ Per-run detail: `results_cnn_w16.md`, `results_cnn.md` (32), `results_cnn_w64.md
 | 32 | 155,337 | 0.9857 | 0.9993 | 0.9010 | 0.00380 | 116 / 116 | 88.2 ms (Fuzzy) |
 | 64 | 77,668 | 0.9956 | 0.9994 | 0.9994 | 0.00514 | 116 / 116 | 255.6 ms (Fuzzy) |
 
+## Encoding ablation — grid vs recurrence plot (WINDOW = 32)
+
+Same net, same window, same split — only the image encoding changes. The grid
+encoding lays the raw normalised features out as a (WINDOW × 9) image; the
+recurrence encoding builds a (WINDOW × WINDOW) frame-to-frame similarity map
+(the Rec-CNN idea from `docs/LITERATURE.md`). Detail: `results_cnn.md` (grid),
+`results_cnn_rec.md` (recurrence).
+
+| Encoding | Image | Macro-F1 | Fuzzy precision | Gear F1 | Normal FPR |
+|---|---|---|---|---|---|
+| grid | 32 × 9 | **0.9857** | 0.9010 | 0.9972 | 0.00380 |
+| recurrence | 32 × 32 | 0.8452 | 0.6498 | 0.7187 | 0.03138 |
+
+**The plain grid clearly wins here — the "fancier" encoding is worse.** This is
+a genuine and useful negative result, not a disappointment: our recurrence map
+collapses all nine features into a single pairwise distance, throwing away the
+per-feature signal (which CAN ID moved, which byte changed) that the grid keeps
+intact. The literature's Rec-CNN builds its recurrence plot from the CAN-ID
+sequence specifically; a naive all-feature distance loses information. Report
+takeaway: encoding choice matters more than model size, and more complex is not
+automatically better — exactly the kind of critical finding Part D rewards.
+
 ## What the dial does (notes for Part D)
 
 1. **Window length is a context-vs-delay trade-off, and the numbers show it

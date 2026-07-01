@@ -28,6 +28,27 @@ def frames_to_image(window):
     return img[None, :, :]                  # add channel dim -> (1, H, W)
 
 
+def frames_to_recurrence(window):
+    """recurrence plot of the frame sequence -> (1, W, W) image.
+
+    the grid encoding keeps raw feature values; this one instead asks "when
+    does the traffic repeat itself". R[i,j] = similarity of frame i and frame
+    j. normal CAN traffic is periodic so it draws a regular texture; an
+    injected burst breaks the period and the texture visibly changes - the
+    rec-cnn idea from docs/LITERATURE.md. this is the ablation encoder,
+    swap it in with:  python src/train_cnn.py 32 rec"""
+    w = window.astype("float32")
+    mn = w.min(axis=0)
+    mx = w.max(axis=0)
+    rng = np.where(mx > mn, mx - mn, 1.0)   # same per-window 0..1 scaling as the grid
+    w = (w - mn) / rng
+    # distance between every pair of frames, squashed to 0..1 similarity
+    # (1 = identical frames, 0 = the furthest-apart pair in this window)
+    d = np.sqrt(((w[:, None, :] - w[None, :, :]) ** 2).sum(-1))
+    img = 1.0 - d / max(float(d.max()), 1e-6)
+    return img[None, :, :].astype("float32")
+
+
 class TinyCNN(nn.Module):
     # deliberately small so it trains on a laptop cpu in minutes.
     # two conv blocks pull local patterns, adaptive pool squashes to a

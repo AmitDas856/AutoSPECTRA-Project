@@ -23,16 +23,22 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from cv_model import TinyCNN, frames_to_image, WINDOW as DEFAULT_WINDOW
+from cv_model import (TinyCNN, frames_to_image, frames_to_recurrence,
+                      WINDOW as DEFAULT_WINDOW)
 from data.load_split import load_and_split
 
-# window size can come from the cli for the ablation:
-#   python src/train_cnn.py 16      (no arg = the usual 32 from cv_model)
-# TinyCNN's adaptive pool copes with any height, so only the windowing
+# window size and encoder can come from the cli for the ablation:
+#   python src/train_cnn.py 16          (window 16, grid encoding)
+#   python src/train_cnn.py 32 rec      (default window, recurrence plot)
+# TinyCNN's adaptive pool copes with any image size, so only the encoding
 # changes - same net, same training recipe, honest comparison.
 WINDOW = int(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_WINDOW
+ENCODING = sys.argv[2] if len(sys.argv) > 2 else "grid"
+ENCODER = frames_to_recurrence if ENCODING == "rec" else frames_to_image
 # ablation runs get their own output files; the default keeps the week-6 names
 TAG = "" if WINDOW == DEFAULT_WINDOW else f"_w{WINDOW}"
+if ENCODING == "rec":
+    TAG += "_rec"
 
 FEATURES   = ["can_id"] + [f"d{i}" for i in range(8)]   # 9 features -> image width 9
 CAP_ATTACK = 6000     # max train windows per attack class
@@ -60,8 +66,9 @@ def make_windows(df):
 
 
 def encode(feats):
-    # run ad's per-window image encoding over a batch of windows
-    return np.stack([frames_to_image(w) for w in feats])   # (n, 1, WINDOW, 9)
+    # run the chosen per-window image encoding over a batch of windows
+    # grid -> (n, 1, WINDOW, 9); rec -> (n, 1, WINDOW, WINDOW)
+    return np.stack([ENCODER(w) for w in feats])
 
 
 def main():
@@ -98,7 +105,7 @@ def main():
     print(f"Capped train windows: {len(tr_y):,}",
           dict(zip(*np.unique(tr_y, return_counts=True))))
 
-    print("Encoding windows to images...")
+    print(f"Encoding windows to images ({ENCODING})...")
     Xtr = torch.from_numpy(encode(tr_X))
     ytr = torch.from_numpy(tr_y)
     Xte = torch.from_numpy(encode(te_X))
