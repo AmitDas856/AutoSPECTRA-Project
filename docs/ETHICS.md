@@ -28,5 +28,18 @@ The Car-Hacking dataset is **one 2010 Hyundai Sonata**. A model trained on it ma
 | "independent insight / forefront of responsible AI" | §1 dual-use + §2 safety-critical error asymmetry |
 | "evaluation of ethical responsibilities" | privacy-by-design (§3), accountability/human-in-loop (§5) |
 
-## Gap to fill
-Add 2–3 cited sources on automotive-security ethics / responsible disclosure / IDS bias so the section has academic backing, not just reasoning.
+## Working scaffold — evidence anchors + sources (Ad absorbs Ethics, 2026-07-02)
+
+> Structure and evidence only. **Ad writes the prose himself** (AITS-2) and defends it in the viva. The value here is that every theme is anchored to a real number from our own `eval/`, which is where the Distinction marks are. Four-move pattern per theme: (1) the issue for *our* system → (2) cite a source → (3) point at our own number → (4) what we did about it.
+
+| Theme | Anchor to OUR real result | Source to cite (verify in Zotero) |
+|---|---|---|
+| §1 Dual-use / disclosure | public dataset only; no attack tooling or new vuln released | UN Reg. No. 155 / UNECE WP.29 (CSMS + mandatory attack reporting) [VERIFY] |
+| §2 Safety error asymmetry (**the 20% point**) | window ablation: Normal FPR 0.0038 (w32) → **0.0185 (w16)** in `eval/ABLATION.md`; CNN Fuzzy precision 0.9010 = real false-alarm cost; RandomForest FPR 0.0 is the *saturated* benchmark, not a win | argue human-in-loop + recall-weighting from our own numbers |
+| §3 Privacy | detection is on-device (no telematics leaves the car) = privacy-by-design | GDPR data-minimisation principle [VERIFY] |
+| §4 Bias / generalisation | one 2010 Hyundai only; the per-file-split gotcha (3 classes vanished from the global test) in `eval/results_week6.md` is a concrete "dataset structure biases results" example | ACM CSCS '22 dataset-eval + ROAD (CSCS '24) [VERIFY] — see LITERATURE rows 10–11 |
+| §5 Accountability | incident report is template-based, not an LLM — deterministic, auditable, cannot hallucinate a fact the detector didn't report (`src/incident_report.py`) | frame as decision-support, human-in-loop |
+
+Extra angle now available: the LSTM-vs-CNN result (LSTM Fuzzy precision 0.9737 vs CNN 0.9010) shows model choice changes the false-alarm profile — another concrete, evidenced ethics point about which model you deploy in a safety system.
+
+Full bullet outline with the argument moves: was staged in `_inbox/miftha-ethics-lit/ethics-outline.md` (kept for reference).
