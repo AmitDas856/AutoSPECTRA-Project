@@ -27,6 +27,7 @@ sys.path.append("src")
 import numpy as np
 
 from data.load_split import parse_file, ATTACK_FILES, CLASSES
+from incident_report import build_report   # NLP report on each first alert
 
 CLASS_NAMES = ["Normal", "DoS", "Fuzzy", "Gear", "RPM"]
 FEATURES = ["can_id", "dlc"] + [f"d{i}" for i in range(8)]   # frame-level features
@@ -95,6 +96,12 @@ def main():
                 name = CLASS_NAMES[int(preds[first])]
                 print(f"  t+{clock:7.2f}s  *** ALERT: {name} attack flagged "
                       f"(frame {first:,}, capture time {ts[first]:.2f}) ***")
+                # turn the raw detection into a plain-language incident report
+                # (Nagireddy's generator). fraction of this chunk flagged as the
+                # class is a rough live-confidence proxy.
+                conf = float((preds[s:e] == preds[first]).mean())
+                print(build_report(name, confidence=conf, onset_s=clock,
+                                   frames_flagged=int(flagged.sum())))
                 alerts += 1
                 in_alert = True
         else:
