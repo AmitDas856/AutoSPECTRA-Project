@@ -10,13 +10,19 @@ the models are compared fairly. Details for each model are in
 | DecisionTree | Amit | frame | 0.9999 | 0.9999 | 0.00012 | 116 / 116 | 0 ms (first frame) |
 | RandomForest | Amit | frame | 1.0000 | 1.0000 | 0.00000 | 116 / 116 | 0 ms (first frame) |
 | TinyCNN | Ad | 32-frame window | 0.9857 | 0.9993 | 0.00380 | 116 / 116 | 88 ms (Fuzzy) |
-| LSTM / autoencoder | Maheswari | sequence | [VERIFY — not run yet] | | | | |
+| SeqLSTM | Ad (absorbed) | 32-frame window | 0.9908 | 0.9993 | 0.00385 | 116 / 116 | 88 ms (Fuzzy) |
 
 ## How to read this table (notes for Part D)
 
+0. **CNN vs LSTM — the informative head-to-head.** On identical windows the
+   SeqLSTM (macro-F1 0.9908) edges the image CNN (0.9857), and the gap is almost
+   entirely Fuzzy: LSTM Fuzzy precision 0.9737 vs CNN 0.9010. Fuzzing is a
+   *temporal* anomaly — random IDs/payloads break the sequence rhythm — which a
+   recurrent model reads more naturally than a spatial CNN. This is the "why is
+   model A better than B *here*" point that earns Part D marks.
 1. **The units are not the same.** The baselines classify single frames; the
-   CNN classifies windows of 32 frames. A window is counted as an attack if
-   any injected frame is inside it. This means the numbers are not directly
+   CNN and LSTM classify windows of 32 frames. A window is counted as an attack
+   if any injected frame is inside it. This means the numbers are not directly
    comparable one to one. The report must state this clearly.
 2. **The frame-level baselines are saturated.** A RandomForest reaches 1.0000
    on every metric. This is expected on this dataset, not impressive: the
