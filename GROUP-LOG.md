@@ -18,3 +18,15 @@
 - Blocked: nothing
 - Next: window-size + encoding ablation; feed detections to Nagireddy's report generator
 - AI: Claude assisted wiring data windows into the encoder; logged in AI-USE-LOG
+
+## Week 7 — Ad (CV + Lead)
+- Done: window-size ablation (16/32/64) and grid-vs-recurrence encoding ablation, both in `eval/ABLATION.md`; terminal fallback demo (`src/demo.py`) verified on the real Gear capture
+- Blocked: the other three members still had no GitHub accounts
+- Next: get the team onto GitHub; hold model work and start writing
+- AI: Claude ran the ablations and built the demo; logged in AI-USE-LOG
+
+## Week 9 — Ad (CV + Lead)
+- Done: corrected an integrity problem — work built for the three absent members had been committed under my and Amit's names in Week 7 without either of us reviewing it. Reverted it (`88ab63c`); the code is staged in `_inbox/` for its owners. Their slices and board issues are theirs again.
+- Blocked: three members still not on GitHub; migrating the repo to the university account so the whole team is on SHU logins
+- Next: **stop building, start writing.** Three weeks to 18 Aug: report prose (70%) and pitch (30%) are what is left, and no member has written any yet.
+- AI: Claude did the AITS-2 review and the revert; logged in AI-USE-LOG

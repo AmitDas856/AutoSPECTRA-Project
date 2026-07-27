@@ -70,10 +70,17 @@ All 5 classes in train AND test. Leakage assert passes per-file ✓
 - 3 team members (Maheswari, Miftha, Nagireddy) haven't provided GitHub usernames — their issues are unassigned
 - nothing technical blocked
 
-## 3. Next step (the single next thing to do)
-- Chase the 3 missing GitHub usernames; backup work for their slices is staged locally so we're not blocked
-- Feed a real detection from demo.py into the incident-report generator (one-line wire-in)
-- Consider a WINDOW=48 point if the report wants a smoother ablation curve
+## 3. Next step — updated 2026-07-28, three weeks to the deadline
+The modelling is done and is enough. **The remaining marks are all writing and presenting**, and none of it is started:
+- **Report prose (70%, individual)** — nobody has written a word of theirs yet. This is the single biggest risk to the grade now.
+- **Pitch + live demo (30%)** — `src/demo.py` works; the deck and the rehearsal do not exist.
+- **Ethics (20% of the report)** — `docs/ETHICS.md` has the structure and the evidence anchors; the prose is unwritten and must be written by whoever submits it.
+
+Also open:
+- Repo moving to the university GitHub account; the whole team moves to SHU logins.
+- The other three members are back to owning their own slices (issues #9–17 unassigned until they have accounts). Starter kits for each are in `_inbox/` and on the shared Drive.
+
+**Do not start new modelling.** A WINDOW=48 point or a fourth model adds nothing to a grade that is 80% evaluation, ethics and communication.
 
 ## 4. How to run what I have
 ```bash
