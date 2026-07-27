@@ -1,18 +1,6 @@
-# ABSORPTION — slices reassigned 2026-07-02 (Gate 3)
-
-The 3 original owners never started, so their core tasks moved to Ad + Amit (issues #9–17 reassigned on GitHub; plan in `_inbox/CONTINGENCY-PLAN.md`). Everything below is **done and verified in-repo this session, ready to commit**:
-- **Ad ← Sequence (#9–11):** `src/seq_model.py` + `src/train_seq.py`; real run macro-F1 **0.9908** (`eval/results_seq.md`); COMPARISON table now has 4 models.
-- **Ad ← Ethics 20% (#13–14):** evidence-anchored scaffold + sources in `docs/ETHICS.md` — **Ad still writes the prose** (AITS-2).
-- **Amit ← NLP/demo (#15–17):** `src/incident_report.py` (verified) + `src/dashboard.py`; wired into `src/demo.py` (report prints live on alert).
-- **Amit ← Literature (#12):** rows 10–14 added to `docs/LITERATURE.md`, all `[VERIFY]` — Amit confirms in Zotero + writes the sentences.
-
-Integrity: code re-owned honestly (run + explained by the committer); no prose faked; no attribution to absent members.
-
----
-
 # STATUS — Amit (Data + Eval)
 
-**Last updated:** 2026-07-02
+**Last updated:** 2026-07-01
 
 ## Done (Week 5-6)
 - `src/data/load_split.py`: per-file time-ordered 70/30 split, leakage assert ✓

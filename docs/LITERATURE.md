@@ -19,13 +19,6 @@
 | 7 | Supervised vs semi-supervised | Comparative Study: Supervised vs Semi-supervised ML for In-vehicle CAN (2022), arXiv:2207.10286 | Labelled vs unlabelled trade-offs | Justifies our supervised baseline + anomaly comparison |
 | 8 | Alt. dataset | ROAD dataset (2020), arXiv:2012.14600 | A more realistic CAN-IDS dataset + critique of older ones | Cross-check / future work; shows we know the data's limits |
 | 9 | Explainability | VAE-based KD meets Explainable AI for in-vehicle IDS (2024), arXiv:2410.09043 | Lightweight + explainable detection | Future-work + ethics (why a flag fired) |
-| 10 | Dataset critique | Systematic Evaluation of Automotive IDS Datasets — ACM CSCS '22, dl.acm.org/doi/abs/10.1145/3568160.3570226 [VERIFY authors] | Benchmarks can be too easy → near-perfect scores mislead | Backs our saturated-baseline discussion (Part D) |
-| 11 | Realistic dataset | AI-Driven IDS on the ROAD Dataset: A Comparative Analysis — ACM CSCS '24, dl.acm.org/doi/10.1145/3689936.3694696 [VERIFY authors] | More realistic CAN traffic; harder than Car-Hacking | Cross-check + "future work = test on ROAD" |
-| 12 | Dataset limits | can-sleuth: capabilities/limitations of automotive IDS datasets (2025) [VERIFY full cite] | What these datasets can and cannot show | Bias/generalisation backbone |
-| 13 | Regulation | UN Regulation No. 155 (UNECE WP.29) — cybersecurity & CSMS, EUR-Lex [VERIFY cite form] | Mandatory CSMS + attack reporting, 60+ markets from 2024 | Ethics dual-use anchor; real compliance regime |
-| 14 | Cross-dataset | ML in Network IDS: A Cross-Dataset Generalization Study (2024) [VERIFY authors/venue] | IDS models transfer poorly across datasets | False-confidence harm (ethics §4) |
-
-> Rows 10–14 added 2026-07-02 (Amit absorbs Literature). All marked [VERIFY]: confirm authors/venue/DOI in Zotero before the APA list; write the 2–3 critical sentences per row yourself.
 
 ## Narrative skeleton (turn into prose)
 - **Problem:** CAN broadcasts unauthenticated frames; injection/spoofing attacks are demonstrated and safety-critical.
