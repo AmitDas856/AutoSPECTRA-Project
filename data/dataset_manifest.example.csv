@@ -1,0 +1,6 @@
+file_name,source_capture,expected_attack_class,size_bytes,sha256,download_date,license_or_terms_checked,notes
+DoS_dataset.csv,DoS,DoS,,,,,
+Fuzzy_dataset.csv,Fuzzy,Fuzzy,,,,,
+gear_dataset.csv,Gear,Gear,,,,,
+RPM_dataset.csv,RPM,RPM,,,,,
+normal_run_data.txt,Normal,Normal,,,,,
