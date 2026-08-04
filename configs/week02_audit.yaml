@@ -1,0 +1,31 @@
+project: AutoSPECTRA
+week: 2
+owner: Amit Das
+
+dataset:
+  name: HCRL Car-Hacking Dataset
+  required_files:
+    - DoS_dataset.csv
+    - Fuzzy_dataset.csv
+    - gear_dataset.csv
+    - RPM_dataset.csv
+
+processing:
+  chunk_size_rows: 400000
+  maximum_sample_rows_per_capture: 50000
+  sample_rows_per_chunk: 4000
+  random_seed: 42
+
+scope:
+  dataset_discovery: true
+  dlc_aware_parsing: true
+  source_level_audit: true
+  initial_eda: true
+  model_training: false
+  final_windowing: false
+  final_split: false
+
+repository_rules:
+  commit_raw_dataset: false
+  commit_trained_models: false
+  commit_processed_cache: false
