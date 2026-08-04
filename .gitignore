@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+# data + models (keep the repo light — document sources instead)
+*.zim
+*.gguf
+/data/
+chroma_db/
+*.sqlite3
+# notebooks / os
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+# secrets (never commit keys — though this project is local-first)
+.env
+*.key
