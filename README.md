@@ -2,14 +2,9 @@
 
 ## Deep-Learning Intrusion Detection and Incident Reporting for Connected-Car CAN Bus Traffic
 
-<p align="center">
-  <img
-    src="docs/images/autospectra_architecture.png"
-    alt="AutoSPECTRA system architecture"
-    width="100%"
-  />
-</p>
+[![AutoSPECTRA system architecture](./docs/images/autospectra_architecture.png?raw=true)](./docs/images/autospectra_architecture.png)
 
+<p align="center"><em>AutoSPECTRA end-to-end system architecture</em></p>
 
 <p align="center">
   <strong>Five-class CAN-bus intrusion detection using machine learning, computer vision, sequence modelling, anomaly detection, calibrated fusion and controlled incident reporting.</strong>
