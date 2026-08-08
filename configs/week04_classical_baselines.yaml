@@ -1,0 +1,45 @@
+project: AutoSPECTRA
+week: 4
+owner: Amit Das
+
+data:
+  window_size_frames: 64
+  stride_frames: 64
+  split_strategy: source_class_chronological_v3
+  tabular_features: 24
+  protected_test_set: true
+
+models:
+  logistic_regression:
+    enabled: true
+    class_weight: balanced
+    max_iter: 1000
+  random_forest:
+    enabled: true
+    estimators: 220
+    min_samples_leaf: 2
+    class_weight: balanced_subsample
+  extra_trees:
+    enabled: true
+    estimators: 220
+    min_samples_leaf: 2
+    class_weight: balanced
+  xgboost:
+    enabled: true
+    estimators: 260
+    max_depth: 6
+    learning_rate: 0.05
+
+primary_metric: macro_f1
+
+outputs:
+  save_png_figures: true
+  images_zip: AutoSPECTRA_Week04_Images.zip
+  evidence_zip: AutoSPECTRA_Week04_Evidence.zip
+
+week_scope:
+  cnn: false
+  lstm: false
+  autoencoder: false
+  fusion: false
+  flask: false
