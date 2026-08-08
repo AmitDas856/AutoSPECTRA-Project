@@ -1,0 +1,34 @@
+project: AutoSPECTRA
+week: 3
+owner: Amit Das
+
+windowing:
+  window_size_frames: 64
+  stride_frames: 64
+  overlap: false
+  minimum_attack_frames: 1
+
+split:
+  strategy: source_class_chronological_v3
+  training_fraction: 0.70
+  validation_fraction: 0.15
+  test_fraction: 0.15
+  protect_test_set: true
+
+classes:
+  - Normal
+  - DoS
+  - Fuzzy
+  - Gear
+  - RPM
+
+representations:
+  tabular_features: 24
+  sequence_shape: [64, 11]
+  recurrence_shape: [64, 64]
+
+week_scope:
+  model_training: false
+  threshold_search: false
+  final_metrics: false
+  flask_deployment: false
