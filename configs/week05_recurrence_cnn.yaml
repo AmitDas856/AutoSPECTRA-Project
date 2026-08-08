@@ -1,0 +1,42 @@
+project: AutoSPECTRA
+week: 5
+owner: Aahmad Sayeed
+
+data:
+  window_size_frames: 64
+  stride_frames: 64
+  split_strategy: source_class_chronological_v3
+  sequence_shape: [64, 11]
+  protected_test_set: true
+
+recurrence:
+  image_shape: [64, 64]
+  gamma: 8.0
+  signal_weights:
+    can_id: 0.35
+    dlc: 0.10
+    payload_mean: 0.45
+    timing: 0.10
+
+cnn:
+  conv_channels: [16, 32, 64]
+  kernel_size: 3
+  batch_normalisation: true
+  global_average_pooling: true
+  dropout: 0.25
+  output_classes: 5
+
+training:
+  batch_size: 256
+  epochs: 8
+  learning_rate: 0.001
+  optimizer: AdamW
+  weight_decay: 0.0001
+  gradient_clip: 2.0
+  label_smoothing: 0.02
+  checkpoint_metric: validation_macro_f1
+  early_stopping_patience: 3
+
+output:
+  images_zip: AutoSPECTRA_Week05_Images.zip
+  evidence_zip: AutoSPECTRA_Week05_Evidence.zip
