@@ -1,0 +1,35 @@
+project: AutoSPECTRA
+week: 6
+owner: Maheswari Kamireddy
+
+data:
+  window_size: 64
+  stride: 64
+  sequence_shape: [64, 11]
+  split_strategy: source_class_chronological_v3
+  protected_test_set: true
+
+lstm:
+  input_size: 11
+  hidden_size: 64
+  layers: 1
+  bidirectional: true
+  pooling: mean
+  dropout: 0.25
+  classes: 5
+
+autoencoder:
+  input_size: 11
+  hidden_size: 48
+  training_data: normal_training_only
+  threshold_selection: validation_only
+  evaluate_both_score_directions: true
+  maximum_validation_fpr: 0.10
+
+training:
+  classifier_epochs: 8
+  autoencoder_epochs: 8
+  batch_size: 256
+  learning_rate: 0.001
+  optimizer: AdamW
+  early_stopping_patience: 3
