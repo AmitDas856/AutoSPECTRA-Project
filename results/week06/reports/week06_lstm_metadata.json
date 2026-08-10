@@ -1,0 +1,16 @@
+{
+  "model": "Bidirectional LSTM Classifier",
+  "class_names": [
+    "Normal",
+    "DoS",
+    "Fuzzy",
+    "Gear",
+    "RPM"
+  ],
+  "window_size": 64,
+  "input_size": 11,
+  "hidden_size": 64,
+  "bidirectional": true,
+  "selected_on": "validation macro-F1",
+  "test_used_for_selection": false
+}

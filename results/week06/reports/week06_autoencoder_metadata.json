@@ -1,0 +1,14 @@
+{
+  "model": "LSTM Autoencoder",
+  "mode": "binary anomaly detection",
+  "training_data": "Normal training windows only",
+  "window_size": 64,
+  "input_size": 11,
+  "hidden_size": 48,
+  "threshold": 0.06880078234523535,
+  "score_direction": "higher_is_attack",
+  "oriented_threshold": 0.06880078234523535,
+  "threshold_selected_on": "validation set only",
+  "maximum_validation_fpr": 0.1,
+  "test_used_for_threshold_selection": false
+}

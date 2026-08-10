@@ -1,0 +1,49 @@
+{
+  "project": "AutoSPECTRA",
+  "week": 6,
+  "scope": "Bidirectional LSTM and normal-only LSTM autoencoder",
+  "split_strategy": "source_class_chronological_v3",
+  "sequence_shape": [
+    64,
+    11
+  ],
+  "lstm_metrics": {
+    "Model": "LSTM Classifier",
+    "Accuracy": 0.9955,
+    "Balanced_Accuracy": 0.9955,
+    "Macro_Precision": 0.99559902200489,
+    "Macro_Recall": 0.9955,
+    "Macro_F1": 0.9955176606841121,
+    "Weighted_F1": 0.9955176606841121,
+    "MCC": 0.9943912366769697,
+    "Log_Loss": 0.03720886478222377,
+    "Macro_ROC_AUC_OVR": 0.9996875,
+    "Macro_PR_AUC": 0.9984486815772595,
+    "Attack_FPR": 0.0,
+    "Attack_FNR": 0.005625,
+    "ECE_10_bins": 0.020961315996944948,
+    "Inference_ms_per_window": 0.0408915457500143,
+    "Throughput_windows_per_second": 24454.932716737672,
+    "Model_Size_MB": 0.1573953628540039,
+    "Training_Seconds": 3.6115870989997347
+  },
+  "autoencoder_metrics": {
+    "Model": "LSTM Autoencoder (binary)",
+    "Threshold_Method": "Validation_F1_with_FPR_constraint",
+    "Score_Direction": "higher_is_attack",
+    "Threshold": 0.06880078234523535,
+    "Accuracy": 0.681,
+    "Precision": 0.9576593720266413,
+    "Recall": 0.6290625,
+    "F1": 0.7593360995850622,
+    "ROC_AUC": 0.7101095703125,
+    "PR_AUC": 0.9310811661567546,
+    "FPR": 0.11125,
+    "FNR": 0.3709375,
+    "Inference_ms_per_window": 0.040126038749917825,
+    "Model_Size_MB": 0.12157344818115234,
+    "Training_Seconds": 1.4624041390002276
+  },
+  "fusion_performed": false,
+  "next_week": "Fusion, calibration, ablation and latency analysis"
+}

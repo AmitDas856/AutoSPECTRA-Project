@@ -1,0 +1,2 @@
+Model,Threshold_Method,Score_Direction,Threshold,Accuracy,Precision,Recall,F1,ROC_AUC,PR_AUC,FPR,FNR,Inference_ms_per_window,Model_Size_MB,Training_Seconds
+LSTM Autoencoder (binary),Validation_F1_with_FPR_constraint,higher_is_attack,0.06880078234523535,0.681,0.9576593720266413,0.6290625,0.7593360995850622,0.7101095703125,0.9310811661567546,0.11125,0.3709375,0.040126038749917825,0.12157344818115234,1.4624041390002276

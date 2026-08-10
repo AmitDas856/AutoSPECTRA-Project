@@ -1,0 +1,20 @@
+{
+  "class_names": [
+    "Normal",
+    "DoS",
+    "Fuzzy",
+    "Gear",
+    "RPM"
+  ],
+  "sequence_shape": [
+    64,
+    11
+  ],
+  "lstm_model_file": "lstm_classifier.pt",
+  "autoencoder_model_file": "lstm_autoencoder.pt",
+  "lstm_predictions": "week06_lstm_predictions.csv",
+  "autoencoder_predictions": "week06_autoencoder_predictions.csv",
+  "high_confidence_errors": "week06_high_confidence_lstm_errors.csv",
+  "human_oversight_required": true,
+  "automatic_vehicle_control": false
+}

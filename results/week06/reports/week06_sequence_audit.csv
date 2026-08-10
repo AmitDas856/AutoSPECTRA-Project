@@ -1,0 +1,4 @@
+Split,Shape,Windows
+Train,"(17500, 64, 11)",17500
+Validation,"(4000, 64, 11)",4000
+Test,"(4000, 64, 11)",4000
