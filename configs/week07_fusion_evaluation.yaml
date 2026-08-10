@@ -1,0 +1,42 @@
+project: AutoSPECTRA
+week: 7
+owner: Maheswari Kamireddy
+
+split:
+  strategy: source_class_chronological_v3
+  protected_test_set: true
+
+fusion:
+  components:
+    - Random Forest
+    - Recurrence CNN
+    - LSTM Classifier
+  method: weighted_soft_voting
+  weight_source: validation_macro_f1
+  test_used_for_weights: false
+
+calibration:
+  method: temperature_scaling
+  candidate_min: 0.5
+  candidate_max: 3.0
+  candidate_count: 51
+  selection_metric: validation_log_loss
+  test_used_for_temperature: false
+
+ablation:
+  feature_groups:
+    - Timing only
+    - CAN ID only
+    - Payload only
+    - ID + timing
+    - All features
+  window_sizes_planned: [32, 64, 128]
+  expensive_window_reruns_enabled: false
+
+evaluation:
+  primary_metric: macro_f1
+  include_fpr: true
+  include_fnr: true
+  include_ece: true
+  include_latency: true
+  include_model_size: true
