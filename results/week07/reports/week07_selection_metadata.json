@@ -1,0 +1,36 @@
+{
+  "project": "AutoSPECTRA",
+  "week": 7,
+  "split_strategy": "source_class_chronological_v3",
+  "class_names": [
+    "Normal",
+    "DoS",
+    "Fuzzy",
+    "Gear",
+    "RPM"
+  ],
+  "fusion_components": [
+    "Random Forest",
+    "Recurrence CNN",
+    "LSTM Classifier"
+  ],
+  "fusion_weights": {
+    "Random Forest": 0.33559704890835157,
+    "Recurrence CNN": 0.3294758239530209,
+    "LSTM Classifier": 0.33492712713862755
+  },
+  "temperature": 0.5,
+  "fusion_weight_selection": "validation macro-F1",
+  "temperature_selection": "validation log loss",
+  "test_used_for_weight_selection": false,
+  "test_used_for_temperature_selection": false,
+  "best_multiclass_model_by_macro_f1": "Random Forest",
+  "best_test_macro_f1": 0.9977540222586209,
+  "window_ablation_executed": false,
+  "window_ablation_plan": [
+    32,
+    64,
+    128
+  ],
+  "next_week": "Incident reporting, Flask application, live demo and final reproducibility package"
+}

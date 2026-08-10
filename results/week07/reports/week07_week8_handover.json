@@ -1,0 +1,19 @@
+{
+  "principal_multiclass_model": "Random Forest",
+  "class_names": [
+    "Normal",
+    "DoS",
+    "Fuzzy",
+    "Gear",
+    "RPM"
+  ],
+  "recommended_fallback": "Random Forest",
+  "fusion_available": true,
+  "calibrated_fusion_available": true,
+  "fusion_weights_file": "fusion_weights.json",
+  "calibration_file": "fusion_calibration.json",
+  "human_oversight_required": true,
+  "automatic_vehicle_control": false,
+  "incident_reporting_week": 8,
+  "flask_integration_week": 8
+}

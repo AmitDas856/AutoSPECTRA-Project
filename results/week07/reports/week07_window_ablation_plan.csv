@@ -1,0 +1,4 @@
+Window_Size,Stride,Purpose
+32,32,"Lower delay, less temporal context"
+64,64,Primary balanced setting
+128,128,"More context, higher delay"
