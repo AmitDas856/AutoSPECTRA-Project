@@ -1,0 +1,1 @@
+"""AutoSPECTRA Flask inference package."""
