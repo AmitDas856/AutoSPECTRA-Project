@@ -1,0 +1,29 @@
+{
+  "project": "AutoSPECTRA",
+  "classes": [
+    "Normal",
+    "DoS",
+    "Fuzzy",
+    "Gear",
+    "RPM"
+  ],
+  "window_size": 64,
+  "recommended_stride": 64,
+  "feature_count": 24,
+  "minimum_required_model": "random_forest.joblib",
+  "copied_model_artifacts": [
+    "autoencoder_threshold.json",
+    "extra_trees.joblib",
+    "fusion_calibration.json",
+    "fusion_config.json",
+    "fusion_weights.json",
+    "logistic_regression.joblib",
+    "lstm_autoencoder.pt",
+    "lstm_classifier.pt",
+    "random_forest.joblib",
+    "recurrence_cnn.pt",
+    "xgboost.joblib"
+  ],
+  "fusion_enabled": true,
+  "generated_utc": "2026-08-02T12:40:58.346057+00:00"
+}

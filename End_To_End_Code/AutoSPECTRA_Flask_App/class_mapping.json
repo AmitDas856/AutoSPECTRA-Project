@@ -1,0 +1,7 @@
+{
+  "Normal": 0,
+  "DoS": 1,
+  "Fuzzy": 2,
+  "Gear": 3,
+  "RPM": 4
+}

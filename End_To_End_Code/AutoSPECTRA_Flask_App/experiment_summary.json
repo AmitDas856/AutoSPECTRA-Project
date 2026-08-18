@@ -1,0 +1,41 @@
+{
+  "project": "AutoSPECTRA",
+  "dataset": "HCRL Car-Hacking Dataset via Kaggle",
+  "classes": [
+    "Normal",
+    "DoS",
+    "Fuzzy",
+    "Gear",
+    "RPM"
+  ],
+  "window_size": 64,
+  "stride": 64,
+  "split_strategy": "source_class_chronological_v3",
+  "chronological_split": {
+    "train": 0.7,
+    "validation": 0.15,
+    "test": 0.15
+  },
+  "fast_mode": true,
+  "best_multiclass_model": "Random Forest",
+  "best_macro_f1": 0.9977540222586209,
+  "device": "cuda",
+  "seed": 42,
+  "autoencoder_binary_results": {
+    "Model": "LSTM Autoencoder (binary)",
+    "Threshold_Method": "Validation_F1_with_FPR_constraint",
+    "Score_Direction": "higher_is_attack",
+    "Threshold": 0.06893573568761349,
+    "Accuracy": 0.6895,
+    "Precision": 0.9557728119180633,
+    "Recall": 0.6415625,
+    "F1": 0.7677636499626028,
+    "ROC_AUC": 0.7135414062500001,
+    "PR_AUC": 0.9321817498129301,
+    "FPR": 0.11875,
+    "FNR": 0.3584375,
+    "Inference_ms_per_window": 0.03866807824999796,
+    "Model_Size_MB": 0.12157344818115234,
+    "Training_Seconds": 1.6049187680000614
+  }
+}
