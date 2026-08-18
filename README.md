@@ -8,6 +8,12 @@
 
 ---
 
+
+<p align="center">
+  <img src="docs/images/autospectra_architecture.png" alt="AutoSPECTRA end-to-end system architecture" width="100%">
+</p>
+<p align="center"><em>Figure 1. AutoSPECTRA end-to-end architecture: CAN ingestion, leakage-aware windowing, multi-representation AI models, fusion/calibration, incident reporting and Flask deployment.</em></p>
+
 ## 1. Project Overview
 
 **AutoSPECTRA** is an academic defensive cybersecurity prototype for analysing Controller Area Network (CAN) traffic from connected vehicles. It processes chronological CAN-message windows and classifies each window into one of five classes:
@@ -66,6 +72,14 @@ All members documented work through GitHub commits, issues, pull requests, revie
 ---
 
 ## 4. System Architecture
+
+
+> **Architecture image path:** keep the diagram in `docs/images/autospectra_architecture.png` so GitHub renders both figures correctly.
+
+<p align="center">
+  <img src="docs/images/autospectra_architecture.png" alt="AutoSPECTRA architecture diagram" width="100%">
+</p>
+<p align="center"><em>Figure 2. Detailed AutoSPECTRA system architecture used in the final implementation.</em></p>
 
 ```text
 HCRL CAN captures
