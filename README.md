@@ -2,19 +2,15 @@
 
 ## Deep-Learning Intrusion Detection and Incident Reporting for Connected-Car CAN Bus Traffic
 
-[![AutoSPECTRA system architecture](./docs/images/autospectra_architecture.png?raw=true)](./docs/images/autospectra_architecture.png)
-
-<p align="center"><em>AutoSPECTRA end-to-end system architecture</em></p>
-
 <p align="center">
   <strong>Five-class CAN-bus intrusion detection using machine learning, computer vision, sequence modelling, anomaly detection, calibrated fusion and controlled incident reporting.</strong>
 </p>
 
 ---
 
-## Project Overview
+## 1. Project Overview
 
-**AutoSPECTRA** is an academic defensive cybersecurity prototype that analyses Controller Area Network (CAN) traffic from connected vehicles and classifies each traffic window into one of five classes:
+**AutoSPECTRA** is an academic defensive cybersecurity prototype for analysing Controller Area Network (CAN) traffic from connected vehicles. It processes chronological CAN-message windows and classifies each window into one of five classes:
 
 - **Normal**
 - **DoS**
@@ -22,113 +18,113 @@
 - **Gear spoofing**
 - **RPM spoofing**
 
-The project combines several artificial-intelligence approaches:
+The project integrates multiple AI and data-science approaches:
 
 - engineered-feature machine learning;
 - recurrence-image computer vision;
-- sequential deep learning;
-- unsupervised anomaly detection;
-- weighted probability fusion;
-- confidence calibration;
-- rule-based natural-language incident reporting;
-- Flask-based demonstration and deployment.
+- Bidirectional LSTM sequence modelling;
+- normal-only LSTM autoencoder anomaly detection;
+- validation-weighted probability fusion;
+- temperature-based confidence calibration;
+- controlled rule-based natural-language incident reporting;
+- a Flask application for live demonstration.
 
-AutoSPECTRA is designed as a **decision-support and research system**. It is not certified for real-vehicle deployment and must not automatically control braking, steering, engine, transmission or other safety-critical vehicle functions.
+AutoSPECTRA is a **decision-support and research prototype**. It is not a certified automotive intrusion-detection system and must not automatically control braking, steering, engine, transmission, or other safety-critical vehicle functions.
 
 ---
 
-## Module Information
+## 2. Module and Assessment Context
 
 | Field | Details |
 |---|---|
 | Module | Advanced Artificial Intelligence Projects in Data Science |
-| Module code | 55-710603 |
+| Module Code | 55-710603 |
+| Module Leader | Royce Copley |
+| Level | 7 |
 | Assessment | AI Project and Pitch |
 | Group | Group 7 |
 | Project | AutoSPECTRA |
-| Main dataset | HCRL Car-Hacking Dataset |
-| Development environment | Kaggle, Python, scikit-learn, XGBoost, PyTorch and Flask |
+| Main Dataset | HCRL Car-Hacking Dataset |
+| Main Tools | Python, Kaggle, scikit-learn, XGBoost, PyTorch, Flask |
+
+The project supports the module learning outcomes by demonstrating modern AI techniques, a complete implemented AI solution, critical technical/social evaluation, and responsible-AI analysis.
 
 ---
 
-## Team
+## 3. Team Roles and Contributions
 
-| Member | Name | Main Role |
-|---|---|---|
-| 1 | Amit Das | Data Pipeline, Evaluation and Repository Integration Lead |
-| 2 | Aahmad Sayeed | EDA, Recurrence Representation and CNN Lead |
-| 3 | Maheswari Kamireddy | LSTM and Autoencoder Sequence-Modelling Lead |
-| 4 | Miftha Thahniyath | Incident Reporting, Flask and Demonstration Lead |
-| 5 | Nagireddy Nakka | Ethics, Responsible AI and Documentation Lead |
+| No. | Team Member | Main Role | Main Contribution |
+|---:|---|---|---|
+| 1 | **Amit Das** | Data Pipeline, Integration & Evaluation Lead | HCRL data discovery, DLC-aware parsing, 64-frame windows, protected chronological split, 24 tabular features, classical baselines, leakage checks and reproducibility validation. |
+| 2 | **Aahmad Sayeed** | Computer Vision & CNN Lead | CAN-to-image recurrence representation, Recurrence CNN implementation/evaluation, CNN confusion/ROC/PR/confidence evidence and visual-model integration. |
+| 3 | **Maheswari Kamireddy** | Sequence Learning, Autoencoder, Fusion & Ablation Lead | Bidirectional LSTM, normal-only autoencoder, validation-only anomaly thresholding, RF+CNN+LSTM fusion, temperature calibration and feature-group ablation. |
+| 4 | **Miftha Thahniyath** | NLP Incident Reporting, Flask & Live Demo Lead | Structured incident-report schema, controlled plain-language reporting, Flask application, prediction/error manifests, README/run instructions and live-demo workflow. |
+| 5 | **Nagireddy Nakka** | Ethics, Responsible AI & Critical Evaluation Lead | False-positive/false-negative analysis, dataset bias, CAN-ID shortcut learning, privacy, dual use, generalisation limitations, human oversight and future-work review. |
 
-All members are expected to maintain individual GitHub evidence through branches, issues, pull requests, reviews and descriptive commits.
-
----
-
-## Research Aim
-
-The project aims to design and critically evaluate a reproducible AI workflow for connected-car CAN-bus intrusion detection while addressing:
-
-- class imbalance;
-- temporal and source leakage;
-- class-coverage problems;
-- false alarms and missed attacks;
-- opaque predictions;
-- probability calibration;
-- computational cost;
-- responsible-AI requirements;
-- human oversight;
-- limitations of one-vehicle benchmark data.
+All members documented work through GitHub commits, issues, pull requests, reviews, technical notes, notebooks, and evidence artifacts.
 
 ---
 
-## System Architecture
-
-The complete workflow is:
+## 4. System Architecture
 
 ```text
-HCRL CAN-bus captures
-        ↓
-Dataset discovery and file validation
-        ↓
+HCRL CAN captures
+      |
+      v
+Dataset discovery and validation
+      |
+      v
 Memory-efficient DLC-aware parser
-        ↓
+      |
+      v
 Chronological 64-frame windows
-        ↓
-Source-aware and class-aware split
-        ↓
- ┌─────────────────────────────────────────────────────────────┐
- │ 24 engineered tabular features                             │
- │ 64 × 11 sequential representation                          │
- │ 64 × 64 recurrence-style image representation              │
- └─────────────────────────────────────────────────────────────┘
-        ↓
- ┌─────────────────────────────────────────────────────────────┐
- │ Logistic Regression                                        │
- │ Random Forest                                              │
- │ Extra Trees                                                │
- │ XGBoost                                                    │
- │ Recurrence CNN                                             │
- │ Bidirectional LSTM                                         │
- │ Normal-only LSTM Autoencoder                               │
- └─────────────────────────────────────────────────────────────┘
-        ↓
-Weighted RF + CNN + LSTM probability fusion
-        ↓
-Temperature calibration
-        ↓
-Five-class prediction
-        ↓
-Structured JSON and plain-language incident report
-        ↓
-Flask demonstration application
+      |
+      v
+Source-aware + class-aware chronological split
+      |
+      +-------------------------+-------------------------+
+      |                         |                         |
+      v                         v                         v
+24 tabular features       64 x 11 sequence        64 x 64 recurrence image
+      |                         |                         |
+      v                         v                         v
+LR / RF / ET / XGB         BiLSTM / AE             Recurrence CNN
+      \                         |                         /
+       \________________________|________________________/
+                                |
+                                v
+                  RF + CNN + LSTM soft-voting fusion
+                                |
+                                v
+                     Temperature calibration
+                                |
+                                v
+                      Five-class CAN prediction
+                                |
+                                v
+               Structured JSON + incident report
+                                |
+                                v
+                        Flask live application
 ```
 
 ---
 
-## Dataset
+## 5. Dataset
 
-The project uses four HCRL attack-capture files:
+### Primary Dataset
+
+The project uses the **HCRL Car-Hacking Dataset**, containing real in-vehicle CAN traffic and injected attack traffic.
+
+Official HCRL dataset page:
+
+<https://ocslab.hksecurity.net/Datasets/CAN-intrusion-dataset>
+
+Kaggle mirror used for the project:
+
+<https://www.kaggle.com/datasets/pranavjha24/car-hacking-dataset>
+
+### Source Files Used by the Final Experiment
 
 ```text
 DoS_dataset.csv
@@ -137,205 +133,431 @@ gear_dataset.csv
 RPM_dataset.csv
 ```
 
-The notebook discovers these files recursively inside the Kaggle input directory.
+The final five-class experiment derives **Normal** windows from legitimate `R` frames contained inside the attack-source captures.
 
-The independent `normal_run_data.txt` file may also be detected, but the main five-class experiment derives Normal windows from legitimate `R` frames inside the four attack captures.
+> **Important:** Raw HCRL data is not stored in this GitHub repository. Download or attach the dataset separately before running the training notebook.
 
-### Important dataset limitation
+### Dataset Citation
 
-The benchmark represents one vehicle environment. Strong within-dataset performance does not establish cross-vehicle or real-road generalisation.
+Song, H. M., Woo, J., & Kim, H. K. (2020). *In-vehicle network intrusion detection using deep convolutional neural network*. Vehicular Communications, 21, 100198.
 
-Raw dataset files are not stored in this repository.
+Seo, E., Song, H. M., & Kim, H. K. (2018). *GIDS: GAN based intrusion detection system for in-vehicle network*. 16th Annual Conference on Privacy, Security and Trust (PST).
 
 ---
 
-## Data Pipeline
+## 6. Pre-trained Models — OneDrive
 
-### DLC-aware parsing
+The trained model binaries are too large / unsuitable to maintain directly in the submitted GitHub repository.
 
-The raw dataset contains variable-length payloads. The final `R` or `T` flag therefore does not always appear in a fixed CSV column.
+### Model Download
+
+Open the repository file below:
+
+**[`models`](./models)**
+
+That file contains the **OneDrive access link** for the trained AutoSPECTRA model artifacts.
+
+After downloading the files from OneDrive, place them in the Flask application's model directory as documented by the deployment manifest, for example:
+
+```text
+AutoSPECTRA_Flask_App/
+└── models/
+    ├── random_forest.joblib
+    ├── extra_trees.joblib
+    ├── logistic_regression.joblib
+    ├── xgboost_model.json            # when exported
+    ├── recurrence_cnn.pt             # when included
+    ├── lstm_classifier.pt
+    ├── lstm_autoencoder.pt           # optional anomaly model
+    ├── fusion_weights.json           # when included
+    └── fusion_calibration.json       # when included
+```
+
+The exact available files should be checked against:
+
+```text
+deployment_manifest.json
+class_mapping.json
+```
+
+### Important Model Compatibility Note
+
+The exported scikit-learn tree models were created with a newer scikit-learn environment. For reliable local loading, use the environment defined in `requirements.txt` rather than an old system Python environment.
+
+**Recommended local environment:** Python **3.10 or 3.11**.
+
+Do not use the legacy Python 3.7 / scikit-learn 0.22 environment shown during early local testing. It can produce errors such as:
+
+```text
+No module named 'numpy._core'
+```
+
+or warnings about loading estimators created with a different scikit-learn version.
+
+---
+
+## 7. Repository / Flask Application Structure
+
+The final application folder is organised approximately as follows:
+
+```text
+AutoSPECTRA_Flask_App/
+├── autospectra/                    # reusable preprocessing / inference code
+├── sample_data/                    # small demonstration input files
+├── static/                         # CSS, JavaScript and generated assets
+├── templates/                      # Flask HTML templates
+├── README.md
+├── app.py                          # local Flask entry point
+├── class_mapping.json
+├── deployment_manifest.json
+├── estimated_detection_latency.csv
+├── experiment_summary.json
+├── export_models_from_kaggle.py
+├── kaggle_launch.py
+├── models                          # text/link file containing OneDrive model access
+├── multiclass_model_comparison.csv
+├── per_class_metrics.csv
+├── requirements.txt
+├── run_local.bat                   # Windows launcher, when present
+└── run_local.sh                    # Linux/macOS launcher, when present
+```
+
+The complete project repository also contains weekly notebooks, documentation, evaluation artifacts, GitHub evidence, and final report/presentation materials.
+
+---
+
+## 8. Environment Setup
+
+### Recommended Python Version
+
+Use **Python 3.10 or Python 3.11** for the final local demo.
+
+Check your version:
+
+```bash
+python --version
+```
+
+### Windows
+
+```bat
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### Linux / macOS
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### Verify Installation
+
+```bash
+python -c "import flask, numpy, pandas, sklearn; print('Environment OK')"
+```
+
+If PyTorch models are used by the selected deployment configuration:
+
+```bash
+python -c "import torch; print(torch.__version__)"
+```
+
+---
+
+## 9. Running the Flask Live Demo
+
+### Step 1 — Download the Models
+
+Open:
+
+```text
+models
+```
+
+in the GitHub folder, follow the OneDrive link, download the required model files, and place them in the application model directory.
+
+### Step 2 — Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Step 3 — Start the Application
+
+From the `AutoSPECTRA_Flask_App` directory:
+
+```bash
+python app.py
+```
+
+or, when provided:
+
+**Windows**
+
+```bat
+run_local.bat
+```
+
+**Linux / macOS**
+
+```bash
+chmod +x run_local.sh
+./run_local.sh
+```
+
+### Step 4 — Open the Interface
+
+Open:
+
+```text
+http://127.0.0.1:5000
+```
+
+### Step 5 — Analyse CAN Traffic
+
+1. Select a trained model available in the application.
+2. Upload an HCRL-style CAN traffic file or provided sample data.
+3. AutoSPECTRA validates and parses the CAN frames.
+4. Chronological 64-frame windows are constructed.
+5. The selected model performs inference.
+6. The interface displays class predictions and confidence.
+7. The application generates charts and incident evidence.
+8. Structured CSV/JSON outputs can be downloaded.
+9. Plain-language incident reports are shown for notable attack windows.
+
+### Demonstration Flow
+
+```text
+Upload CAN file
+      |
+      v
+Parse + validate
+      |
+      v
+64-frame chronological windows
+      |
+      v
+AI inference
+      |
+      v
+Prediction + confidence
+      |
+      +--> predicted-class chart
+      +--> confidence timeline
+      +--> CAN message-rate chart
+      +--> probability heatmap
+      |
+      v
+Structured JSON + plain-language incident report
+      |
+      v
+Human analyst review
+```
+
+The live assessment demonstration should use the running application rather than screenshots or prerecorded video.
+
+---
+
+## 10. Running the End-to-End Training / Evaluation Notebook
+
+The authoritative end-to-end notebook should be run in Kaggle with the HCRL dataset attached.
+
+Recommended workflow:
+
+1. Open Kaggle.
+2. Create a notebook.
+3. Attach the Car-Hacking Dataset.
+4. Upload the final AutoSPECTRA notebook.
+5. Enable GPU acceleration for deep-learning stages if available.
+6. Run all cells from top to bottom.
+
+The complete experiment performs:
+
+- data discovery and parsing;
+- source/class-aware chronological window generation;
+- 24-feature tabular representation;
+- 64 x 11 sequence representation;
+- 64 x 64 recurrence-image representation;
+- Logistic Regression;
+- Random Forest;
+- Extra Trees;
+- XGBoost;
+- Recurrence CNN;
+- Bidirectional LSTM;
+- LSTM autoencoder;
+- validation-weighted fusion;
+- temperature calibration;
+- feature ablation;
+- latency analysis;
+- incident reporting;
+- Flask deployment export.
+
+Typical final outputs include:
+
+```text
+/kaggle/working/AutoSPECTRA_Artifacts.zip
+/kaggle/working/AutoSPECTRA_Flask_Deployment.zip
+/kaggle/working/AutoSPECTRA_Week08_Images.zip
+/kaggle/working/AutoSPECTRA_Week08_Evidence.zip
+```
+
+---
+
+## 11. Data Pipeline and Leakage Controls
+
+### DLC-aware Parsing
+
+The raw CAN files contain variable-length payloads, so the `R` / `T` flag is not assumed to exist at a fixed column index.
 
 The parser:
 
-1. reads timestamps, CAN IDs and DLC;
+1. reads timestamp, CAN ID and DLC;
 2. uses DLC to identify valid payload positions;
 3. locates the final normal/attack flag;
 4. converts hexadecimal CAN IDs and payload bytes;
-5. pads unavailable payload positions to a consistent eight-byte format;
-6. processes the large source files in chunks;
-7. records invalid or dropped rows;
-8. preserves the original chronological order.
+5. pads payloads to eight positions;
+6. processes large files in chunks;
+7. preserves chronological order;
+8. records invalid/dropped rows.
 
 ### Windowing
 
-The primary experiment uses:
-
-| Setting | Value |
+| Setting | Final Value |
 |---|---:|
 | Window size | 64 CAN frames |
 | Stride | 64 CAN frames |
 | Overlap | None |
-| Minimum injected frames | 1 |
 | Classes | 5 |
+| Minimum attack frames for attack label | 1 |
 
-A window is labelled:
+### Protected Split
 
-- **Normal** when it contains no injected `T` frame;
-- as its source attack class when it contains at least one injected frame.
+The final split strategy is:
 
-The attack-frame ratio is retained as audit metadata and is not used as a model feature.
-
-### Split strategy
-
-The corrected split is described as:
-
-> Source-aware, class-aware, chronologically partitioned reservoir sampling.
-
-The sampled windows remain associated with their source and class, are sorted by original source position and are divided chronologically into:
+> **Source-aware, class-aware, chronologically partitioned reservoir sampling.**
 
 ```text
-70% training
-15% validation
-15% testing
+70% Training
+15% Validation
+15% Test
 ```
 
-The implementation explicitly checks that all five classes are represented in every split.
+The workflow explicitly checks class coverage and avoids random frame-level splitting that could leak temporally adjacent traffic between partitions.
 
 ---
 
-## Feature Representations
+## 12. Feature Representations
 
-### Tabular features
+### 24 Tabular Features
 
-Each 64-frame window is converted into 24 engineered features covering:
+Features cover:
 
-- message duration and rate;
+- duration and message rate;
 - inter-arrival-time statistics;
-- CAN-ID diversity and entropy;
-- dominant-ID behaviour;
-- CAN-ID transitions;
+- CAN-ID diversity, entropy and dominance;
+- ID transitions;
 - DLC statistics;
 - payload mean, standard deviation and entropy;
 - non-zero-byte ratio;
-- payload-byte change;
+- payload changes;
 - payload-sum statistics.
 
-### Sequential representation
+### 64 x 11 Sequence
 
-Each window becomes a:
-
-```text
-64 × 11
-```
-
-sequence containing:
+Each sequence contains:
 
 - normalised CAN ID;
 - normalised DLC;
 - eight normalised payload bytes;
 - log-scaled inter-arrival time.
 
-### Recurrence-image representation
+### 64 x 64 Recurrence-Style Image
 
-Each sequence is compressed into a one-dimensional signal and converted into a:
-
-```text
-64 × 64
-```
-
-pairwise recurrence-style image used by the CNN.
+The CNN uses a recurrence-style pairwise-distance representation derived from each 64-frame sequence.
 
 ---
 
-## Models
+## 13. Models
 
-### Classical machine learning
+### Classical Machine Learning
 
 - Logistic Regression
 - Random Forest
 - Extra Trees
 - XGBoost
 
-### Deep learning
+### Deep Learning
 
 - Recurrence-image CNN
 - Bidirectional LSTM classifier
-- LSTM autoencoder
+- Normal-only LSTM autoencoder
 
-### Fusion
+### Fusion and Calibration
 
-Validation macro-F1 is used to derive component weights for:
+Random Forest, CNN, and LSTM probabilities are combined by validation-derived weighted soft voting. Temperature scaling is selected using validation log loss to improve probability calibration.
 
-- Random Forest;
-- recurrence CNN;
-- LSTM classifier.
-
-The weighted probabilities are then calibrated using temperature scaling.
+The test set is not used to select fusion weights, temperature, or autoencoder threshold.
 
 ---
 
-## Evaluation
+## 14. Evaluation Metrics
 
-The project evaluates:
+AutoSPECTRA reports:
 
 - accuracy;
 - balanced accuracy;
-- per-class precision;
-- per-class recall;
-- per-class F1;
-- macro-F1;
-- weighted-F1;
+- macro precision / recall / F1;
+- weighted F1;
+- per-class precision / recall / F1;
 - confusion matrices;
-- one-vs-rest ROC-AUC;
-- one-vs-rest PR-AUC;
-- false-positive rate;
-- false-negative rate;
+- ROC-AUC;
+- PR-AUC;
+- attack false-positive rate;
+- attack false-negative rate;
+- expected calibration error;
+- log loss;
 - model size;
 - inference time;
+- throughput;
 - estimated detection latency;
-- calibration error;
-- feature ablations;
-- model-fusion behaviour;
-- reconstruction-error anomaly detection.
+- feature-group ablation;
+- anomaly-detection performance.
 
-The main model-selection measure is **macro-F1** because all five classes must contribute equally to the evaluation.
+**Macro-F1** is treated as the main multiclass model-selection metric because every class contributes equally.
 
 ---
 
-## Main Results
+## 15. Final Stored Results
 
-The stored final run used balanced fast-mode samples:
+The final balanced fast-mode experiment used:
 
-| Split | Windows | Per class |
+| Split | Total Windows | Windows per Class |
 |---|---:|---:|
 | Training | 17,500 | 3,500 |
 | Validation | 4,000 | 800 |
 | Test | 4,000 | 800 |
 
-### Multiclass comparison
+### Multiclass Models
 
 | Model | Accuracy | Macro-F1 |
 |---|---:|---:|
-| Random Forest | 0.99775 | 0.997754 |
-| XGBoost | 0.99775 | 0.997754 |
+| Random Forest | 0.99775 | **0.997754** |
+| XGBoost | 0.99775 | **0.997754** |
 | Extra Trees | 0.99725 | 0.997256 |
 | Logistic Regression | 0.99650 | 0.996511 |
-| Calibrated fusion | 0.99525 | 0.995270 |
+| Calibrated RF + CNN + LSTM Fusion | 0.99525 | 0.995270 |
 | Bidirectional LSTM | 0.99475 | 0.994771 |
 | Recurrence CNN | 0.98050 | 0.980563 |
 
-Random Forest and XGBoost achieved the joint-highest test macro-F1.
-
-Random Forest is retained as the principal deployment baseline because it is:
-
-- highly accurate;
-- computationally efficient;
-- easier to interpret;
-- suitable as a reliable Flask fallback.
+Random Forest and XGBoost achieved the joint-highest stored test macro-F1. Random Forest is retained as the principal deployment fallback because it combines strong accuracy, low inference cost, interpretability, and straightforward local deployment.
 
 ### Autoencoder
-
-The normal-only LSTM autoencoder achieved:
 
 | Metric | Result |
 |---|---:|
@@ -346,348 +568,147 @@ The normal-only LSTM autoencoder achieved:
 | ROC-AUC | 0.7135 |
 | PR-AUC | 0.9322 |
 
-The autoencoder is therefore treated as a secondary anomaly signal rather than the primary detector.
+The autoencoder is treated as a **secondary anomaly signal**, not the primary detector.
 
 ### Calibration
 
-Temperature scaling reduced the fusion model's expected calibration error from approximately:
+Temperature scaling reduced the fusion expected calibration error approximately from:
 
 ```text
-0.024620 → 0.001828
+0.024620 -> 0.001828
 ```
 
-Calibration improved confidence quality but did not change the predicted classes.
+This improved confidence quality but did not make fusion the strongest classifier.
 
 ---
 
-## Feature-Ablation Findings
+## 16. Feature-Ablation Findings
 
-| Feature group | Macro-F1 |
+| Feature Group | Macro-F1 |
 |---|---:|
-| CAN ID and timing | 0.997754 |
+| CAN ID + timing | 0.997754 |
 | All 24 features | 0.997505 |
 | CAN ID only | 0.997505 |
 | Payload only | 0.993527 |
 | Timing only | 0.707266 |
 
-These findings suggest that CAN identifiers carry much of the predictive signal in this benchmark.
-
-This is also a limitation: the models may learn vehicle- or capture-specific identifier patterns rather than universally transferable attack behaviour.
+The near-perfect CAN-ID-only result is both a performance finding and a **generalisation warning**: models may learn vehicle/capture-specific CAN identifier patterns rather than universally transferable attack behaviour.
 
 ---
 
-## Estimated Detection Latency
+## 17. Detection-Latency Evidence
 
-The notebook estimates latency from the first injected frame in a correctly classified window to the end of that window.
+Approximate median upper-bound attack-onset-to-window-end latency:
 
-Approximate median upper-bound latency:
-
-| Attack | Median latency |
+| Attack | Median Upper-Bound Latency |
 |---|---:|
-| RPM spoofing | 25.75 ms |
-| Gear spoofing | 28.92 ms |
-| Fuzzy | Approximately 53–54 ms |
-| DoS | Approximately 55–56 ms |
+| RPM spoofing | ~25.75 ms |
+| Gear spoofing | ~28.92 ms |
+| Fuzzy | ~53–54 ms |
+| DoS | ~55–56 ms |
 
-These values are window-completion estimates, not complete in-vehicle response times.
+These values represent window-completion latency and are **not** complete real-vehicle response times.
 
 ---
 
-## Incident Reporting
+## 18. Incident Reporting
 
-The reporting component produces controlled and reproducible outputs rather than unrestricted generative text.
+The final reporting layer uses **controlled template-based natural-language generation**, not unrestricted external generative AI.
 
-Each report can contain:
+An incident report can contain:
 
 - selected model;
 - predicted class;
 - confidence;
 - severity;
-- window start and end timestamps;
-- window size;
+- window timestamps;
 - dominant CAN ID;
 - message rate;
 - unique CAN-ID count;
 - CAN-ID entropy;
 - recommended defensive action;
-- human-oversight warning.
+- explicit human-oversight statement.
 
-Example output structure:
+Example:
 
 ```json
 {
   "system": "AutoSPECTRA",
   "predicted_class": "DoS",
-  "confidence": 0.97,
-  "severity": "High",
+  "confidence": 0.988,
+  "severity": "Critical",
   "window_size_frames": 64,
   "dominant_can_id": "0x000",
-  "recommended_action": "Alert the operator and inspect the affected CAN segment.",
-  "human_oversight": "Decision-support alert only. Do not automatically control safety-critical vehicle functions."
+  "recommended_action": "Alert the security operator, preserve the CAN trace, and investigate the suspected flooding source.",
+  "human_oversight": "Decision-support alert only. Human review is required before any operational response."
 }
 ```
 
 ---
 
-## Flask Application
-
-The final notebook exports a Flask deployment package containing:
-
-- trained model files;
-- preprocessing functions;
-- model-fusion configuration;
-- calibration parameters;
-- incident-report generator;
-- HTML templates;
-- CSS and static assets;
-- upload and prediction routes;
-- CSV and JSON downloads;
-- local run scripts.
-
-The main demonstration flow is:
-
-```text
-Upload unseen CAN log
-        ↓
-Validate and parse
-        ↓
-Create chronological windows
-        ↓
-Generate model probabilities
-        ↓
-Display prediction and confidence
-        ↓
-Generate incident report
-        ↓
-Download structured results
-```
-
----
-
-## Eight-Week Development Plan
-
-| Week | Main GitHub Evidence |
-|---|---|
-| Week 1 | Repository setup, project charter, architecture, roles and ethics baseline |
-| Week 2 | Dataset acquisition, DLC-aware parsing, source audit and initial EDA |
-| Week 3 | Windowing, chronological split, leakage tests and feature representations |
-| Week 4 | Classical machine-learning baselines |
-| Week 5 | Recurrence-image encoder and CNN |
-| Week 6 | Bidirectional LSTM and LSTM autoencoder |
-| Week 7 | Fusion, calibration, ablation, latency, error analysis and responsible AI |
-| Week 8 | Incident reports, Flask application, live demonstration and final package |
-
----
-
-## Repository Structure
-
-```text
-AutoSPECTRA-CAN-IDS/
-├── README.md
-├── requirements.txt
-├── .gitignore
-├── configs/
-│   ├── week1_baseline.yaml
-│   ├── week02_audit.yaml
-│   └── week2_experiment.yaml
-├── data/
-│   ├── README.md
-│   └── dataset_manifest.example.csv
-├── docs/
-│   ├── images/
-│   │   └── autospectra_architecture.png
-│   ├── architecture/
-│   ├── ethics/
-│   ├── literature/
-│   ├── meeting-notes/
-│   ├── project-management/
-│   ├── testing/
-│   └── week02/
-├── notebooks/
-│   ├── week02/
-│   │   └── autospectra_week02_dataset_audit_eda.ipynb
-│   └── autospectra_end_to_end.ipynb
-├── results/
-│   └── week02/
-├── scripts/
-│   ├── check_project_structure.py
-│   └── validate_week02_notebook.py
-├── src/
-│   └── autospectra/
-└── tests/
-    ├── test_repository_scaffold.py
-    └── test_week02_notebook_structure.py
-```
-
----
-
-## Running the Week 2 Notebook
-
-1. Open Kaggle.
-2. Create a new notebook.
-3. Attach the HCRL Car-Hacking dataset.
-4. Upload:
-
-```text
-notebooks/week02/autospectra_week02_dataset_audit_eda.ipynb
-```
-
-5. Run all cells from top to bottom.
-
-The Week 2 notebook generates:
-
-```text
-/kaggle/working/AutoSPECTRA_Week02_Evidence.zip
-```
-
-The ZIP contains small audit tables, JSON summaries and EDA figures. It does not contain the raw dataset.
-
----
-
-## Running the Final Notebook
-
-Upload and run:
-
-```text
-notebooks/autospectra_end_to_end.ipynb
-```
-
-The notebook writes its final artifacts to:
-
-```text
-/kaggle/working/autospectra_outputs
-```
-
-It can also export:
-
-```text
-/kaggle/working/AutoSPECTRA_Artifacts.zip
-/kaggle/working/AutoSPECTRA_Flask_Deployment.zip
-```
-
----
-
-## Local Validation
-
-Validate the Week 2 notebook:
-
-```bash
-python scripts/validate_week02_notebook.py
-```
-
-Run repository tests:
-
-```bash
-python -m pytest tests -q
-```
-
----
-
-## Installation
-
-Create a virtual environment:
-
-```bash
-python -m venv .venv
-```
-
-Activate it on Windows:
-
-```bash
-.venv\Scripts\activate
-```
-
-Activate it on Linux or macOS:
-
-```bash
-source .venv/bin/activate
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## GitHub Workflow
-
-Each member should:
-
-1. create a role-specific branch;
-2. commit only meaningful incremental work;
-3. use descriptive commit messages;
-4. open an issue for each task;
-5. link the issue to a pull request;
-6. request review from another member;
-7. record non-code work in Markdown;
-8. merge only after review;
-9. update the contribution-evidence log.
-
-Example branch:
-
-```bash
-git checkout -b week2/amit-data-pipeline
-```
-
-Example commit:
-
-```bash
-git commit -m "Notebook: add Week 2 HCRL dataset audit and initial EDA"
-```
-
----
-
-## Responsible AI and Safety
+## 19. Responsible AI, Ethics and Safety
 
 AutoSPECTRA follows these principles:
 
-- defensive use only;
+- defensive cybersecurity use only;
 - no automatic safety-critical vehicle control;
-- human oversight;
-- confidence is not treated as certainty;
-- false positives and false negatives are reported separately;
-- dataset and generalisation limitations are disclosed;
+- mandatory human oversight;
+- confidence is evidence, not certainty;
+- false positives and false negatives are evaluated separately;
+- benchmark and generalisation limits are disclosed;
 - raw research data is not committed;
-- secrets and access tokens are never committed;
-- potential dual-use risks are documented;
-- model outputs are treated as decision-support evidence.
+- access tokens and secrets must not be committed;
+- dual-use risk is documented;
+- output is intended to support, not replace, qualified security analysts.
+
+### Key Risks
+
+| Risk | Potential Consequence | Control |
+|---|---|---|
+| False negative | Attack is missed | FNR reporting, multiple models, analyst review |
+| False positive | Alert fatigue / unnecessary intervention | FPR reporting, confidence display, no automatic control |
+| Dataset bias | Poor performance on different vehicles | Explicit limitation and future cross-vehicle validation |
+| CAN-ID shortcut learning | Benchmark-specific success | Feature ablation and cross-dataset future work |
+| Misinterpreted confidence | Over-trust in model output | Calibration analysis and human oversight |
+| Dual use | Offensive misuse | Defensive-only scope and no attack-execution tooling |
 
 ---
 
-## Known Limitations
+## 20. Known Limitations
 
-- One-vehicle benchmark.
-- Balanced samples do not represent natural attack prevalence.
-- CAN IDs may create vehicle-specific shortcuts.
-- Independent normal capture is not the primary normal source.
-- No complete cross-dataset evaluation is included in the stored final run.
-- Fusion does not outperform the best standalone tree models.
-- The autoencoder misses a substantial proportion of attacks.
-- Latency is estimated at window level.
-- The prototype has not been tested in a real moving vehicle.
-- The system is not safety-certified.
+- The principal benchmark represents one vehicle environment.
+- Balanced experimental windows do not represent natural attack prevalence.
+- CAN IDs can create vehicle-specific shortcut signals.
+- The independent normal capture is not the main Normal source in the stored five-class experiment.
+- No complete cross-vehicle/cross-dataset validation is included in the stored final run.
+- Fusion does not outperform the strongest standalone tree models on macro-F1.
+- The normal-only autoencoder misses too many attacks for primary deployment.
+- Detection latency is estimated at window level.
+- The local Flask application is an academic prototype.
+- The system has not been safety-certified or validated in a moving real vehicle.
 
 ---
 
-## Reproducibility
+## 21. Reproducibility Controls
 
 The project uses:
 
 - fixed random seeds;
 - explicit class order;
 - versioned split strategy;
-- configuration-based processing;
+- configuration-based data processing;
 - class-coverage assertions;
-- validation-only model selection;
+- non-overlapping windows;
+- validation-only checkpoint selection;
+- validation-only fusion weights;
+- validation-only calibration temperature;
 - validation-only anomaly threshold selection;
-- test-set isolation;
-- saved metrics and plots;
-- documented hardware and software versions;
-- GitHub issues, commits, reviews and pull requests.
+- held-out test isolation;
+- saved metrics and figures;
+- environment requirements;
+- GitHub commits, issues, pull requests and peer review.
 
-The authoritative class order is:
+Authoritative class order:
 
 ```text
 Normal, DoS, Fuzzy, Gear, RPM
@@ -695,36 +716,179 @@ Normal, DoS, Fuzzy, Gear, RPM
 
 ---
 
-## Academic and Defensive-Use Disclaimer
+## 22. GitHub Project-Management Workflow
 
-AutoSPECTRA is an academic prototype created for research, learning and defensive cybersecurity evaluation.
+For weekly contribution evidence, each member should:
 
-It is not:
+1. work on a role-specific branch;
+2. create/receive an assigned GitHub issue;
+3. move the issue through the project board;
+4. commit meaningful incremental work;
+5. use descriptive commit messages;
+6. record non-code work as Markdown/documents;
+7. open a pull request;
+8. request peer review;
+9. merge only after review;
+10. retain evidence in GitHub history.
 
-- a commercial automotive security product;
-- a certified intrusion-detection system;
-- a substitute for expert automotive-security review;
-- authorised to inject CAN traffic;
-- authorised to control a real vehicle;
-- suitable for unsupervised safety-critical decisions.
+Example descriptive commit messages:
+
+```text
+Data: implement DLC-aware HCRL parsing
+Notebook: add Week 5 recurrence CNN experiment
+Eval: add fusion calibration and ablation evidence
+Ethics: document cross-vehicle generalisation risk
+App: add final AutoSPECTRA Flask demonstration source
+```
 
 ---
 
-## Project Status
+## 23. Troubleshooting
+
+### Error: Flask version cannot be installed
+
+If you see an error similar to:
 
 ```text
-Week 1: Completed
-Week 2: Completed
-Week 3: Planned / incremental evidence
-Week 4: Planned / incremental evidence
-Week 5: Planned / incremental evidence
-Week 6: Planned / incremental evidence
-Week 7: Planned / incremental evidence
-Week 8: Planned / final integration
+Could not find a version that satisfies the requirement Flask<4,>=3.1
 ```
 
-The authoritative final implementation is maintained in:
+check your Python version:
+
+```bash
+python --version
+```
+
+Use Python 3.10 or 3.11 in a fresh virtual environment.
+
+### Error: `No module named 'numpy._core'`
+
+This usually indicates an incompatible legacy NumPy/scikit-learn environment loading a newer serialized model.
+
+Recommended fix:
+
+```bat
+py -3.11 -m venv .venv
+.venv\Scripts\activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+Then restart the Flask application.
+
+### Warning: model created with scikit-learn 1.6.1 but current version is older
+
+Do not rely on the old environment. Install the versions defined by the project requirements before running the final demo.
+
+### Some models are unavailable but the app launches
+
+Check:
+
+1. the OneDrive model download is complete;
+2. the files are in the expected model directory;
+3. names match `deployment_manifest.json`;
+4. the Python/scikit-learn/PyTorch environment is compatible.
+
+The application may still expose other successfully loaded models, but the final demonstration should be tested in advance with the intended model.
+
+---
+
+## 24. Submission Checklist
+
+### Source Code
+
+- [ ] `README.md` included.
+- [ ] `requirements.txt` included.
+- [ ] `app.py` included.
+- [ ] reusable source modules included.
+- [ ] HTML/static assets included.
+- [ ] sample demonstration data included where permitted.
+- [ ] final notebook included.
+- [ ] evaluation CSV/JSON evidence included.
+- [ ] OneDrive model-access link included through `models`.
+- [ ] dataset link included.
+- [ ] no raw large dataset committed.
+- [ ] no API keys, passwords, tokens or private credentials committed.
+
+### Live Demo
+
+- [ ] environment created with supported Python version;
+- [ ] requirements installed successfully;
+- [ ] model files downloaded from OneDrive;
+- [ ] application starts locally;
+- [ ] sample file uploads successfully;
+- [ ] predictions and confidence display;
+- [ ] charts render;
+- [ ] CSV/JSON downloads work;
+- [ ] incident report renders;
+- [ ] human-oversight limitation is explained.
+
+---
+
+## 25. Future Work
+
+Recommended extensions include:
+
+- validation on multiple vehicle platforms;
+- independent normal-driving captures;
+- ROAD or another independent CAN intrusion benchmark;
+- stealthier and lower-rate attack scenarios;
+- streaming evaluation and concept-drift detection;
+- stronger explainability for security analysts;
+- secure edge deployment on automotive-grade hardware;
+- hardware-in-the-loop latency measurement;
+- adversarial robustness testing;
+- formal automotive cybersecurity and safety validation.
+
+---
+
+## 26. Academic and Defensive-Use Disclaimer
+
+AutoSPECTRA was created for academic research, learning, and defensive cybersecurity evaluation.
+
+It is **not**:
+
+- a commercial automotive cybersecurity product;
+- a certified intrusion-detection system;
+- a replacement for professional automotive-security review;
+- authorised to inject malicious CAN traffic into real vehicles;
+- authorised to control a vehicle;
+- suitable for unsupervised safety-critical decision-making.
+
+---
+
+## 27. Final Project Status
 
 ```text
-notebooks/autospectra_end_to_end.ipynb
+Technical Milestone 1: Repository, architecture and governance              Completed
+Technical Milestone 2: HCRL parsing, audit and EDA                         Completed
+Technical Milestone 3: Windowing, protected split and representations      Completed
+Technical Milestone 4: Classical ML baselines                              Completed
+Technical Milestone 5: Recurrence CNN                                      Completed
+Technical Milestone 6: BiLSTM and autoencoder                              Completed
+Technical Milestone 7: Fusion, calibration, ablation and latency           Completed
+Technical Milestone 8: Incident reporting, Flask and final release         Completed
 ```
+
+These eight technical milestones sit within the wider 12-week module/project lifecycle, including formative feedback, report preparation, demonstration rehearsal, final validation, and assessment delivery.
+
+---
+
+## 28. Quick Start
+
+For the final Flask demonstration:
+
+```text
+1. Install Python 3.10/3.11
+2. Create and activate a virtual environment
+3. pip install -r requirements.txt
+4. Open the repository file: models
+5. Follow the OneDrive link and download the trained models
+6. Place the model files in the expected model directory
+7. python app.py
+8. Open http://127.0.0.1:5000
+9. Upload a sample HCRL-style CAN file
+10. Review prediction, confidence, visualisations and incident report
+```
+
+**Human oversight is required for all AutoSPECTRA alerts.**
