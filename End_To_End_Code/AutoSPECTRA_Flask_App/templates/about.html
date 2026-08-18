@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}About AutoSPECTRA{% endblock %}
+{% block content %}
+<section class="prose panel">
+    <p class="eyebrow">Project overview</p>
+    <h1>Deep-learning intrusion detection for the connected car</h1>
+    <p>AutoSPECTRA analyses chronological windows of Controller Area Network traffic and classifies them as Normal, DoS, Fuzzy, Gear spoofing, or RPM spoofing.</p>
+    <h2>Pipeline</h2>
+    <ol>
+        <li>Parse timestamp, arbitration ID, DLC, and up to eight payload bytes.</li>
+        <li>Create fixed chronological windows using the same preprocessing as training.</li>
+        <li>Run a feature model, recurrence-image CNN, LSTM, or calibrated fusion when the artifacts are available.</li>
+        <li>Display probability, confidence, timelines, and a deterministic incident report.</li>
+    </ol>
+    <h2>Responsible use</h2>
+    <p>This is an academic decision-support prototype trained on a public single-vehicle dataset. High test performance does not establish safe operation across different makes, models, ECUs, environments, or previously unseen attacks. Human review is mandatory.</p>
+</section>
+{% endblock %}

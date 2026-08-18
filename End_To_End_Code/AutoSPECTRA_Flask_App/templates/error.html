@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}AutoSPECTRA · Error{% endblock %}
+{% block content %}
+<section class="error-card panel">
+    <p class="eyebrow">Action required</p>
+    <h1>{{ title }}</h1>
+    <p>{{ message }}</p>
+    <a class="primary-button inline-button" href="{{ url_for('index') }}">Return to dashboard</a>
+</section>
+{% endblock %}

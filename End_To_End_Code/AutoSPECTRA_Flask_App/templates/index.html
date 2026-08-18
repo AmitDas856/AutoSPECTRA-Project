@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}AutoSPECTRA · Analyse CAN Traffic{% endblock %}
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">Connected-vehicle security</p>
+        <h1>Detect CAN bus attacks from a live capture.</h1>
+        <p class="lead">Upload HCRL-style CAN traffic. AutoSPECTRA creates chronological {{ registry_status.window_size }}-frame windows, runs the selected trained model, visualises the output, and generates plain-language incident reports.</p>
+    </div>
+    <div class="status-card">
+        <span class="status-dot {% if available_models %}online{% else %}offline{% endif %}"></span>
+        <div>
+            <strong>{% if available_models %}Inference ready{% else %}Model setup required{% endif %}</strong>
+            <p>{{ available_models|length }} selectable model(s)</p>
+            <small>{{ registry_status.model_directory }}</small>
+        </div>
+    </div>
+</section>
+
+{% if registry_status.warnings %}
+<section class="notice warning">
+    <strong>Model notices</strong>
+    <ul>{% for warning in registry_status.warnings %}<li>{{ warning }}</li>{% endfor %}</ul>
+</section>
+{% endif %}
+
+{% if not available_models %}
+<section class="notice danger">
+    <h2>No trained model artifacts were found</h2>
+    <p>Copy at least <code>random_forest.joblib</code> from <code>autospectra_outputs/models</code> into this app's <code>models/</code> folder, then restart Flask.</p>
+</section>
+{% endif %}
+
+<section class="grid two-column">
+    <article class="panel">
+        <h2>Run analysis</h2>
+        <form id="analysis-form" action="{{ url_for('analyze') }}" method="post" enctype="multipart/form-data">
+            <label class="dropzone" for="can_file">
+                <input id="can_file" name="can_file" type="file" accept=".csv,.txt,.log" required>
+                <span class="dropzone-title">Choose a CAN capture</span>
+                <span class="dropzone-subtitle">CSV, TXT, or LOG · maximum {{ max_upload_mb }} MB</span>
+                <span id="selected-file" class="selected-file">No file selected</span>
+            </label>
+
+            <div class="form-grid">
+                <label>
+                    <span>Inference model</span>
+                    <select name="model_key" {% if not available_models %}disabled{% endif %}>
+                        {% for model in available_models %}
+                        <option value="{{ model.key }}" {% if model.key == default_model %}selected{% endif %}>{{ model.name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>
+                    <span>Stride</span>
+                    <input type="number" name="stride" min="1" max="256" value="{{ registry_status.window_size }}">
+                    <small>{{ registry_status.window_size }} gives non-overlapping windows.</small>
+                </label>
+                <label>
+                    <span>Maximum windows</span>
+                    <input type="number" name="max_windows" min="1" max="{{ max_windows }}" value="1000">
+                    <small>Use 100–500 for a fast live pitch.</small>
+                </label>
+            </div>
+
+            <button class="primary-button" type="submit" {% if not available_models %}disabled{% endif %}>
+                Analyse CAN traffic
+            </button>
+            <div id="loading-message" class="loading-message" hidden>
+                Parsing frames, building windows, and running inference…
+            </div>
+        </form>
+    </article>
+
+    <article class="panel">
+        <h2>Expected input format</h2>
+        <pre><code>Timestamp,CAN_ID,DLC,DATA_0,...,DATA_n[,Flag]
+1478198376.389427,0316,8,05,21,68,09,21,21,00,6f,R</code></pre>
+        <p>The final <code>R</code>/<code>T</code> flag is optional and ignored during inference. Missing payload positions are padded with zero according to the DLC.</p>
+        <h3>Predicted classes</h3>
+        <div class="chips">
+            {% for name in class_names %}<span>{{ name }}</span>{% endfor %}
+        </div>
+        <h3>Safety position</h3>
+        <p>AutoSPECTRA raises a decision-support alert. It never disables an ECU or controls braking, steering, the engine, or transmission.</p>
+    </article>
+</section>
+{% endblock %}

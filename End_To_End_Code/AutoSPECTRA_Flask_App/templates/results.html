@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}AutoSPECTRA · Results{% endblock %}
+{% block content %}
+<section class="results-heading">
+    <div>
+        <p class="eyebrow">Analysis complete</p>
+        <h1>{{ summary.filename }}</h1>
+        <p>Model: <strong>{{ summary.model_name }}</strong> · Window {{ summary.window_size }} · Stride {{ summary.stride }}</p>
+    </div>
+    <a class="secondary-button" href="{{ url_for('index') }}">Analyse another file</a>
+</section>
+
+<section class="metric-grid">
+    <article><span>Total windows</span><strong>{{ summary.total_windows }}</strong></article>
+    <article><span>Attack windows</span><strong>{{ summary.attack_windows }}</strong></article>
+    <article><span>Attack rate</span><strong>{{ '%.1f'|format(summary.attack_rate * 100) }}%</strong></article>
+    <article><span>Mean confidence</span><strong>{{ '%.1f'|format(summary.mean_confidence * 100) }}%</strong></article>
+    <article><span>Valid frames read</span><strong>{{ summary.valid_frames_read }}</strong></article>
+    <article><span>Processing time</span><strong>{{ '%.2f'|format(summary.processing_seconds) }} s</strong></article>
+</section>
+
+{% if summary.truncated_at_limit %}
+<section class="notice warning">Analysis stopped at the configured maximum-window limit. Increase it for a fuller offline run.</section>
+{% endif %}
+
+<section class="panel">
+    <div class="panel-heading">
+        <h2>Downloads</h2>
+        <div class="download-row">
+            {% for filename in downloads %}
+            <a class="secondary-button" href="{{ url_for('download', run_id=run_id, filename=filename) }}">{{ filename }}</a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="chart-grid">
+    <article class="panel"><h2>Predicted classes</h2><img src="data:image/png;base64,{{ charts.distribution }}" alt="Predicted class distribution"></article>
+    <article class="panel"><h2>Confidence timeline</h2><img src="data:image/png;base64,{{ charts.confidence }}" alt="Confidence timeline"></article>
+    <article class="panel"><h2>CAN message rate</h2><img src="data:image/png;base64,{{ charts.message_rate }}" alt="Message-rate timeline"></article>
+    <article class="panel"><h2>Probability heatmap</h2><img src="data:image/png;base64,{{ charts.heatmap }}" alt="Class-probability heatmap"></article>
+</section>
+
+<section class="panel">
+    <h2>Notable incident windows</h2>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Window</th><th>Prediction</th><th>Confidence</th><th>Dominant CAN ID</th><th>Rate</th><th>Incident report</th></tr></thead>
+            <tbody>
+            {% for row in notable_rows %}
+                <tr>
+                    <td>{{ row.window_index }}</td>
+                    <td><span class="class-badge class-{{ row.predicted_class|lower }}">{{ row.predicted_class }}</span></td>
+                    <td>{{ '%.1f'|format(row.confidence * 100) }}%</td>
+                    <td>{{ row.dominant_can_id }}</td>
+                    <td>{{ '%.1f'|format(row.message_rate_hz) }} msg/s</td>
+                    <td>{{ row.incident_narrative }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% if warnings %}
+<section class="notice warning"><strong>Runtime notices</strong><ul>{% for warning in warnings %}<li>{{ warning }}</li>{% endfor %}</ul></section>
+{% endif %}
+{% endblock %}
